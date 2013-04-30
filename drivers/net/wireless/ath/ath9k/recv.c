@@ -696,6 +696,7 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 		if (!skb)
 			return true;
 
+<<<<<<< HEAD
 		bf = SKB_CB_ATHBUF(skb);
 		BUG_ON(!bf);
 
@@ -703,6 +704,14 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 		list_add_tail(&bf->list, &sc->rx.rxbuf);
 		ath_rx_edma_buf_link(sc, qtype);
 		return true;
+=======
+			__skb_unlink(skb, &rx_edma->rx_fifo);
+			list_add_tail(&bf->list, &sc->rx.rxbuf);
+			ath_rx_edma_buf_link(sc, qtype);
+		}
+
+		bf = NULL;
+>>>>>>> cdb568f... Squashed update of kernel from 3.4.0 to 3.4.42
 	}
 	skb_queue_tail(&rx_edma->rx_buffers, skb);
 
@@ -786,6 +795,7 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 			return NULL;
 	}
 
+	list_del(&bf->list);
 	if (!bf->bf_mpdu)
 		return bf;
 
@@ -824,6 +834,18 @@ static bool ath9k_rx_accept(struct ath_common *common,
 		(ATH9K_RXERR_DECRYPT | ATH9K_RXERR_CRC | ATH9K_RXERR_MIC |
 		 ATH9K_RXERR_KEYMISS));
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Key miss events are only relevant for pairwise keys where the
+	 * descriptor does contain a valid key index. This has been observed
+	 * mostly with CCMP encryption.
+	 */
+	if (rx_stats->rs_keyix == ATH9K_RXKEYIX_INVALID ||
+	    !test_bit(rx_stats->rs_keyix, common->ccmp_keymap))
+		rx_stats->rs_status &= ~ATH9K_RXERR_KEYMISS;
+
+>>>>>>> cdb568f... Squashed update of kernel from 3.4.0 to 3.4.42
 	if (!rx_stats->rs_datalen)
 		return false;
         /*
@@ -1773,7 +1795,6 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 	struct ieee80211_hw *hw = sc->hw;
 	struct ieee80211_hdr *hdr;
 	int retval;
-	bool decrypt_error = false;
 	struct ath_rx_status rs;
 	enum ath9k_rx_qtype qtype;
 	bool edma = !!(ah->caps.hw_caps & ATH9K_HW_CAP_EDMA);
@@ -1795,6 +1816,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 	tsf_lower = tsf & 0xffffffff;
 
 	do {
+		bool decrypt_error = false;
 		/* If handling rx interrupt and flush is in progress => exit */
 		if ((sc->sc_flags & SC_OP_RXFLUSH) && (flush == 0))
 			break;
@@ -1957,14 +1979,15 @@ requeue_drop_frag:
 			sc->rx.frag = NULL;
 		}
 requeue:
+		list_add_tail(&bf->list, &sc->rx.rxbuf);
+		if (flush)
+			continue;
+
 		if (edma) {
-			list_add_tail(&bf->list, &sc->rx.rxbuf);
 			ath_rx_edma_buf_link(sc, qtype);
 		} else {
-			list_move_tail(&bf->list, &sc->rx.rxbuf);
 			ath_rx_buf_link(sc, bf);
-			if (!flush)
-				ath9k_hw_rxena(ah);
+			ath9k_hw_rxena(ah);
 		}
 	} while (1);
 
