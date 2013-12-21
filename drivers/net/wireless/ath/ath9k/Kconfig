@@ -51,9 +51,6 @@ config ATH9K_DEBUGFS
 
 	  Also required for changing debug message flags at run time.
 
-<<<<<<< HEAD
-config ATH9K_RATE_CONTROL
-=======
 config ATH9K_DFS_CERTIFIED
 	bool "Atheros DFS support for certified platforms"
 	depends on ATH9K && EXPERT
@@ -82,7 +79,6 @@ config ATH9K_MAC_DEBUG
 	  data and some other MAC related statistics
 
 config ATH9K_LEGACY_RATE_CONTROL
->>>>>>> 623b5ac... Squashed update of kernel from 3.4.49 to 3.4.50
 	bool "Atheros ath9k rate control"
 	depends on ATH9K
 	default n
