@@ -1,7 +1,7 @@
 /* arch/arm/mach-msm/include/mach/board.h
  *
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2008-2012, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2008-2012, The Linux Foundation. All Rights Reserved.
  * Author: Brian Swetland <swetland@google.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -421,11 +421,9 @@ struct msm_panel_common_pdata {
 	u32 mem_hid;
 	char cont_splash_enabled;
 	u32 splash_screen_addr;
-	u32 splash_screen_size;
+ 	u32 splash_screen_size;
 	char mdp_iommu_split_domain;
-	int (*mdp_color_enhance)(void);
-	int (*mdp_gamma)(void);
-        u32 avtimer_phy;
+	u32 avtimer_phy;
 };
 
 
@@ -483,10 +481,8 @@ struct mipi_dsi_panel_platform_data {
 	int fpga_3d_config_addr;
 	int *gpio;
 	struct mipi_dsi_phy_ctrl *phy_ctrl_settings;
-	char dlane_swap;
 	void (*dsi_pwm_cfg)(void);
 	char enable_wled_bl_ctrl;
-	void (*gpio_set_backlight)(int bl_level);
 };
 
 struct lvds_panel_platform_data {

@@ -20,7 +20,6 @@
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/anon_inodes.h>
-#include <linux/msm_ion.h>
 #include <linux/ion.h>
 #include <linux/list.h>
 #include <linux/memblock.h>
@@ -34,7 +33,7 @@
 #include <linux/uaccess.h>
 #include <linux/debugfs.h>
 #include <linux/dma-buf.h>
-
+#include <linux/msm_ion.h>
 
 #include <mach/iommu_domains.h>
 #include "ion_priv.h"

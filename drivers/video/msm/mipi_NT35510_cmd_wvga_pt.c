@@ -37,8 +37,6 @@ static int mipi_cmd_nt35510_wvga_pt_init(void)
 {
 	int ret;
 
-        pr_debug("%s: E\n", __func__);
-
 	if (msm_fb_detect_client("mipi_cmd_nt35510_wvga"))
 		return 0;
 
@@ -93,8 +91,6 @@ static int mipi_cmd_nt35510_wvga_pt_init(void)
 						MIPI_DSI_PANEL_WVGA_PT);
 	if (ret)
 		pr_err("%s: failed to register device!\n", __func__);
-
-        pr_debug("%s: X\n", __func__);
 
 	return ret;
 }

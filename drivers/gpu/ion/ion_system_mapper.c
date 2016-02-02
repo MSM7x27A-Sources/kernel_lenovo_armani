@@ -16,7 +16,6 @@
 
 #include <linux/err.h>
 #include <linux/ion.h>
-#include <linux/msm_ion.h>
 #include <linux/memory.h>
 #include <linux/mm.h>
 #include <linux/slab.h>

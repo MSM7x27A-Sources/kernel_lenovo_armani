@@ -76,21 +76,21 @@ obj-$(CONFIG_FB_MSM_MIPI_DSI) += msm_mipi.o
 
 # MIPI manufacture
 obj-$(CONFIG_FB_MSM_MIPI_DSI_TOSHIBA) += mipi_toshiba.o
-obj-$(CONFIG_FB_MSM_MIPI_DSI_NOVATEK) += mipi_novatek.o
+
 obj-$(CONFIG_FB_MSM_MIPI_DSI_ORISE) += mipi_orise.o
 obj-$(CONFIG_FB_MSM_MIPI_DSI_RENESAS) += mipi_renesas.o
 obj-$(CONFIG_FB_MSM_MIPI_DSI_TRULY) += mipi_truly.o
 obj-$(CONFIG_FB_MSM_MIPI_DSI_NT35510) += mipi_NT35510.o
-obj-$(CONFIG_FB_MSM_MIPI_DSI_HX8389B) += mipi_hx8389b.o
-obj-$(CONFIG_FB_MSM_MIPI_DSI_OTM9605A) += mipi_otm9605a.o
+
+
 obj-$(CONFIG_FB_MSM_MIPI_DSI_NT35516) += mipi_truly_tft540960_1_e.o
 obj-$(CONFIG_FB_MSM_MIPI_DSI_YASSY) += mipi_yassy_andorra.o
-obj-$(CONFIG_FB_MSM_MIPI_DSI_NT35590) += mipi_NT35590.o
+
 obj-$(CONFIG_FB_MSM_MIPI_DSI_SIMULATOR) += mipi_simulator.o
-obj-$(CONFIG_FB_MSM_MIPI_DSI_OTM8009A) += mipi_otm8009a_athenae.o
+
 
 # MIPI Bridge
-obj-$(CONFIG_FB_MSM_MIPI_DSI_TC358764_DSI2LVDS) += mipi_tc358764_dsi2lvds.o
+# obj-$(CONFIG_FB_MSM_MIPI_DSI_TC358764_DSI2LVDS) += mipi_tc358764_dsi2lvds.o
 
 # TVEnc
 obj-$(CONFIG_FB_MSM_TVOUT) += tvenc.o
@@ -102,6 +102,7 @@ endif
 obj-y += msm_fb_panel.o
 obj-$(CONFIG_FB_MSM_EBI2_TMD_QVGA_EPSON_QCIF) += ebi2_tmd20.o
 obj-$(CONFIG_FB_MSM_EBI2_TMD_QVGA_EPSON_QCIF) += ebi2_l2f.o
+obj-$(CONFIG_FB_MSM_EBI2_TOVIS_QVGA) += ebi2_tovis.o
 
 ifeq ($(CONFIG_FB_MSM_MDDI_AUTO_DETECT),y)
 obj-y += mddi_prism.o
@@ -124,23 +125,7 @@ obj-$(CONFIG_FB_MSM_MDDI_QUICKVX) += mddi_quickvx.o
 endif
 
 ifeq ($(CONFIG_FB_MSM_MIPI_PANEL_DETECT),y)
-obj-y += mipi_toshiba_video_wvga_pt.o mipi_toshiba_video_wsvga_pt.o mipi_toshiba_video_wuxga.o
-obj-y += mipi_novatek_video_qhd_pt.o mipi_novatek_cmd_qhd_pt.o
-obj-y += mipi_orise_video_720p_pt.o mipi_orise_cmd_720p_pt.o
-obj-y += mipi_renesas_video_fwvga_pt.o mipi_renesas_cmd_fwvga_pt.o
-obj-y += mipi_NT35510_video_wvga_pt.o mipi_NT35510_cmd_wvga_pt.o
-obj-y += mipi_hx8389b_video_qhd_pt.o
-obj-y += mipi_otm9605a_video_qhd_pt.o
 obj-y += mipi_GL4502F_sicily.o mipi_GL4502F_sicily_cmd_wvga_pt.o
-obj-y += mipi_himax_aruba.o mipi_himax_aruba_cmd_wvga_pt.o
-obj-y += mipi_NT35516.o mipi_NT35516_cmd_qhd_pt.o
-obj-y += mipi_truly_tft540960_1_e_video_qhd_pt.o mipi_truly_tft540960_1_e_cmd_qhd_pt.o
-obj-y += mipi_NT35590_cmd_720p_pt.o mipi_NT35590_video_720p_pt.o
-obj-y += mipi_chimei_wxga_pt.o
-obj-y += mipi_chimei_wuxga.o
-obj-y += mipi_truly_video_wvga_pt.o
-obj-y += mipi_yassy_andorra.o  mipi_yassy_cmd_qhd_pt.o
-obj-y += mipi_otm8009a_athenae.o  mipi_otm8009a_cmd_fwvga_pt.o
 else
 obj-$(CONFIG_FB_MSM_MIPI_TOSHIBA_VIDEO_WVGA_PT) += mipi_toshiba_video_wvga_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_TOSHIBA_VIDEO_WSVGA_PT) += mipi_toshiba_video_wsvga_pt.o
@@ -158,7 +143,7 @@ obj-$(CONFIG_FB_MSM_MIPI_YASSY_CMD_WVGA_PT) += mipi_yassy_cmd_qhd_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_OTM8009A_CMD_WVGA_PT) += mipi_otm8009a_cmd_fwvga_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_NT35510_VIDEO_WVGA_PT) += mipi_NT35510_video_wvga_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_HX8389B_VIDEO_QHD_PT) += mipi_hx8389b_video_qhd_pt.o
-obj-$(CONFIG_FB_MSM_MIPI_OTM9605A_VIDEO_QHD_PT) += mipi_otm9605a_video_qhd_pt.o
+
 obj-$(CONFIG_FB_MSM_MIPI_NT35516_CMD_QHD_PT) += mipi_truly_tft540960_1_e_cmd_qhd_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_YASSY_CMD_QHD_PT) += mipi_yassy_cmd_qhd_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_NT35516_VIDEO_QHD_PT) += mipi_truly_tft540960_1_e_video_qhd_pt.o

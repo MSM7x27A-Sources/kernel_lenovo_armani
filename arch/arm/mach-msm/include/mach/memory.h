@@ -1,7 +1,7 @@
 /* arch/arm/mach-msm/include/mach/memory.h
  *
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2009-2012, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -122,11 +122,11 @@ void find_membank0_hole(void);
 
 /*
  * Need a temporary unique variable that no one will ever see to
- * hold the compat string. Line number gives this easily.
- * Need another layer of indirection to get __LINE__ to expand
- * properly as opposed to appending and ending up with
- * __compat___LINE__
- */
++ * hold the compat string. Line number gives this easily.
++ * Need another layer of indirection to get __LINE__ to expand
++ * properly as opposed to appending and ending up with
++ * __compat___LINE__
++ */
 #define __CONCAT(a, b)	___CONCAT(a, b)
 #define ___CONCAT(a, b)	a ## b
 

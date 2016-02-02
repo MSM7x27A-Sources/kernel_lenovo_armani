@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -78,11 +78,11 @@ void *ddl_pmem_alloc(struct ddl_buf_addr *addr, size_t sz, u32 alignment)
 		}
 		kernel_vaddr = (unsigned long *) ion_map_kernel(
 					ddl_context->video_ion_client,
-					addr->alloc_handle, ionflag);
+					addr->alloc_handle);
 		if (IS_ERR_OR_NULL(kernel_vaddr)) {
 				DDL_MSG_ERROR("%s() :DDL ION map failed\n",
 							 __func__);
-				goto free_ion_falloc;
+				goto free_ion_alloc;
 		}
 		addr->virtual_base_addr = (u8 *) kernel_vaddr;
 		if (res_trk_check_for_sec_session()) {

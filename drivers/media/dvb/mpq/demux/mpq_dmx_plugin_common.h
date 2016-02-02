@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +13,7 @@
 #ifndef _MPQ_DMX_PLUGIN_COMMON_H
 #define _MPQ_DMX_PLUGIN_COMMON_H
 
-#include <linux/ion.h>
+#include <linux/msm_ion.h>
 
 #include "dvbdev.h"
 #include "dmxdev.h"

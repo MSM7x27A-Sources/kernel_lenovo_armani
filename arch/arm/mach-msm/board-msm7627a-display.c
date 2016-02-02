@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1066,6 +1066,8 @@ static struct msm_panel_common_pdata mdp_pdata = {
 	.gpio = 97,
 	.mdp_rev = MDP_REV_303,
 	.cont_splash_enabled = 0x1,
+	.splash_screen_addr = 0x00,
+	.splash_screen_size = 0x00,
 };
 
 static char lcdc_splash_is_enabled()
@@ -1809,15 +1811,16 @@ static int mipi_dsi_panel_power(int on)
 
 #define MDP_303_VSYNC_GPIO 97
 
-#ifdef CONFIG_FB_MSM_MIPI_DSI
+
 static struct mipi_dsi_platform_data mipi_dsi_pdata = {
 	.vsync_gpio		= MDP_303_VSYNC_GPIO,
 	.dsi_power_save		= mipi_dsi_panel_power,
 	.dsi_client_reset       = msm_fb_dsi_client_reset,
 	.get_lane_config	= msm_fb_get_lane_config,
 	.splash_is_enabled	= mipi_dsi_splash_is_enabled,
+	.dlane_swap		= 0x1,
 };
-#endif
+
 
 static char mipi_dsi_splash_is_enabled(void)
 {
@@ -1905,6 +1908,7 @@ void __init msm_fb_add_devices(void)
 	}
 
 	mdp_pdata.cont_splash_enabled = 0x1;	//temp config, need removed when lcd driver add in lk
+	mipi_dsi_pdata.dlane_swap = 0;
 #ifdef LENOVO_CHECK_LCD_CONNECT_STATE
 	if(lenovo_lcd_is_exist() == LCD_NOT_EXIST) {
 		printk("***************** lenovo lcd not exist, so close backlight **********************\n");

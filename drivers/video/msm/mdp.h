@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2008-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -264,12 +264,6 @@ struct mdp_hist_lut_info {
 	uint32_t block;
 	boolean is_enabled, has_sel_update;
 	int bank_sel;
-};
-
-struct mdp_reg {
-	uint32_t reg;
-	uint32_t val;
-	uint32_t mask;
 };
 
 struct mdp_hist_mgmt {
@@ -626,15 +620,7 @@ extern struct mdp_hist_mgmt *mdp_hist_mgmt_array[];
 #define DMA_DSTC1B_5BITS BIT(2)
 #define DMA_DSTC2R_5BITS BIT(4)
 
-#ifdef CONFIG_FB_MSM_EBI2
-/* LGE_CHANGE
- * FIXME: EBI2 LCD support. If QCT is implement, should be removed.
- * 2011-06-17, bongkyu.kim@lge.com
- */
-#define DMA_PACK_TIGHT                      0
-#else
 #define DMA_PACK_TIGHT                      BIT(6)
-#endif /*CONFIG_FB_MSM_EBI2*/
 #define DMA_PACK_LOOSE                      0
 #define DMA_PACK_ALIGN_LSB                  0
 /*
@@ -847,16 +833,6 @@ static inline void mdp4_mddi_rdptr_init(int cndx)
 }
 
 #endif
-
-/* LGE_CHANGE_S : LCD ESD Protection 
- * 2012-01-30, yoonsoo@lge.com
- * LCD ESD Protection
- */
-#ifdef CONFIG_LGE_LCD_ESD_DETECTION
-void esd_dma_dsi_panel_off(void);
-void esd_dma_dsi_panel_on(void);
-#endif
-/* LGE_CHANGE_E : LCD ESD Protection*/
 
 void set_cont_splashScreen_status(int);
 

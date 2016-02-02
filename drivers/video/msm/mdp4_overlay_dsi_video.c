@@ -42,7 +42,6 @@
 static int first_pixel_start_x;
 static int first_pixel_start_y;
 static int dsi_video_enabled;
-static int vsync_irq_cnt;
 
 #define MAX_CONTROLLER	1
 
@@ -380,9 +379,6 @@ ssize_t mdp4_dsi_video_show_event(struct device *dev,
 
 	if (atomic_read(&vctrl->suspend) > 0 ||
 		atomic_read(&vctrl->vsync_resume) == 0)
-		return 0;
-
-	if (!dsi_video_enabled)
 		return 0;
 
 	spin_lock_irqsave(&vctrl->spin_lock, flags);

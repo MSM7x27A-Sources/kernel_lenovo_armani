@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,9 +10,6 @@
  * GNU General Public License for more details.
  *
  */
-#define DEBUG
-
-#include <mach/socinfo.h>
 
 #include "msm_fb.h"
 #include "mipi_dsi.h"
@@ -22,10 +19,10 @@ static struct msm_panel_common_pdata *mipi_nt35510_pdata;
 static struct dsi_buf nt35510_tx_buf;
 static struct dsi_buf nt35510_rx_buf;
 
-static int mipi_nt35510_bl_ctrl = 0;
+static int mipi_nt35510_bl_ctrl;
 
-#define NT35510_SLEEP_OFF_DELAY 10
-#define NT35510_DISPLAY_ON_DELAY 0
+#define NT35510_SLEEP_OFF_DELAY 150
+#define NT35510_DISPLAY_ON_DELAY 150
 
 /* common setting */
 static char exit_sleep[2] = {0x11, 0x00};
@@ -44,10 +41,10 @@ static char cmd0[6] = {
 	0x08, 0x01,
 };
 static char cmd1[4] = {
-        0xBC, 0x00, 0x80, 0x00,
+	0xBC, 0x00, 0xA0, 0x00,
 };
 static char cmd2[4] = {
-        0xBD, 0x00, 0x80, 0x00,
+	0xBD, 0x00, 0xA0, 0x00,
 };
 static char cmd3[3] = {
 	0xBE, 0x00, 0x79,
@@ -214,11 +211,6 @@ static char cmd26[6] = {
 static char cmd27[2] = {
 	0x35, 0x00,
 };
-static char cmd28[12] = {
-        0xF9, 0x0A, 0x00, 0x0E,
-        0x1F, 0x37, 0x55, 0x6E,
-        0x6E, 0x46, 0x28, 0x0E,
-};
 static char config_MADCTL[2] = {0x36, 0x00};
 static struct dsi_cmd_desc nt35510_cmd_display_on_cmds[] = {
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(cmd0), cmd0},
@@ -249,10 +241,9 @@ static struct dsi_cmd_desc nt35510_cmd_display_on_cmds[] = {
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(cmd25), cmd25},
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(cmd26), cmd26},
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(cmd27), cmd27},
-	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(cmd28), cmd28},
 
-	{DTYPE_DCS_WRITE, 1, 0, 0, NT35510_SLEEP_OFF_DELAY, sizeof(exit_sleep), exit_sleep},
-	{DTYPE_DCS_WRITE, 1, 0, 0, NT35510_DISPLAY_ON_DELAY, sizeof(display_on), display_on},
+	{DTYPE_DCS_WRITE, 1, 0, 0, 0,	sizeof(exit_sleep), exit_sleep},
+	{DTYPE_DCS_WRITE, 1, 0, 0, 0,	sizeof(display_on), display_on},
 
 	{DTYPE_DCS_WRITE1, 1, 0, 0, 0,
 		sizeof(config_MADCTL), config_MADCTL},
@@ -261,7 +252,7 @@ static struct dsi_cmd_desc nt35510_cmd_display_on_cmds[] = {
 };
 
 static struct dsi_cmd_desc nt35510_cmd_display_on_cmds_rotate[] = {
-	{DTYPE_DCS_LWRITE, 1, 0, 0, 10,
+	{DTYPE_DCS_LWRITE, 1, 0, 0, 0,
 		sizeof(cmd19_rotate), cmd19_rotate},
 };
 
@@ -270,10 +261,10 @@ static char video0[6] = {
 	0x08, 0x01,
 };
 static char video1[4] = {
-        0xBC, 0x00, 0x80, 0x00,
+	0xBC, 0x00, 0xA0, 0x00,
 };
 static char video2[4] = {
-        0xBD, 0x00, 0x80, 0x00,
+	0xBD, 0x00, 0xA0, 0x00,
 };
 static char video3[3] = {
 	0xBE, 0x00, 0x79,
@@ -405,9 +396,6 @@ static char video18[2] = {
 static char video19[3] = {
 	0xB1, 0xFC, 0x00,
 };
-static char video19_rotate[3] = {
-	0xB1, 0xFC, 0x06,
-};
 static char video20[4] = {
 	0xBC, 0x05, 0x05, 0x05,
 };
@@ -440,7 +428,7 @@ static char video26[6] = {
 static char video27[2] = {
 	0x35, 0x00,
 };
-
+static char config_video_MADCTL[2] = {0x36, 0xC0};
 static struct dsi_cmd_desc nt35510_video_display_on_cmds[] = {
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(video0), video0},
 	{DTYPE_GEN_LWRITE, 1, 0, 0, 0, sizeof(video1), video1},
@@ -477,17 +465,15 @@ static struct dsi_cmd_desc nt35510_video_display_on_cmds[] = {
 };
 
 static struct dsi_cmd_desc nt35510_video_display_on_cmds_rotate[] = {
-	{DTYPE_DCS_LWRITE, 1, 0, 0, 10,
-		sizeof(video19_rotate), video19_rotate},
+	{DTYPE_DCS_WRITE1, 1, 0, 0, 0,
+		sizeof(config_video_MADCTL), config_video_MADCTL},
 };
-
 static int mipi_nt35510_lcd_on(struct platform_device *pdev)
 {
 	struct msm_fb_data_type *mfd;
 	struct mipi_panel_info *mipi;
 	static int rotate;
 	struct dcs_cmd_req cmdreq;
-	pr_debug("mipi_nt35510_lcd_on E\n");
 
 	mfd = platform_get_drvdata(pdev);
 	if (!mfd)
@@ -543,8 +529,6 @@ static int mipi_nt35510_lcd_on(struct platform_device *pdev)
 			mipi_dsi_cmdlist_put(&cmdreq);
 		}
 	}
-
-	pr_debug("mipi_nt35510_lcd_on X\n");
 
 	return 0;
 }
@@ -639,11 +623,6 @@ static int __devinit mipi_nt35510_lcd_probe(struct platform_device *pdev)
 		mipi_nt35510_pdata = pdev->dev.platform_data;
 		if (mipi_nt35510_pdata->bl_lock)
 			spin_lock_init(&mipi_nt35510_pdata->bl_spinlock);
-
-                /* PVT use PWM as backlight control method */
-                if((machine_is_msm8625_qrd5() && hw_version_is(3, 0)) || machine_is_msm7x27a_qrd5a())
-                        mipi_nt35510_bl_ctrl = 1;
-
 		return 0;
 	}
 

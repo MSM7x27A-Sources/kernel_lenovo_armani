@@ -1043,4 +1043,7 @@ config FB_MSM_QPIC_PANEL_DETECT
 if FB_MSM_MDSS
 	source "drivers/video/msm/mdss/Kconfig"
 endif
+config FB_MSM_ALIGN_BUFFER
+	bool "Enable a buffer alignment hack (for recovery)."
+	default y
 endif

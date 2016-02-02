@@ -1,4 +1,4 @@
-/* Copyright (c) 2002,2007-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2002,2007-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -971,7 +971,7 @@ a2xx_getchipid(struct kgsl_device *device)
 	/* 8x25 returns 0 for minor id, but it should be 1 */
 	if (cpu_is_qsd8x50())
 		patchid = 1;
-	else if (cpu_is_msm8625() && minorid == 0)
+	else if ((cpu_is_msm8625() || cpu_is_msm8625q()) && minorid == 0)
 		minorid = 1;
 
 	chipid |= (minorid << 8) | patchid;
@@ -3016,7 +3016,7 @@ static int adreno_ringbuffer_drain(struct kgsl_device *device,
 	/*
 	 * The first time into the loop, wait for 100 msecs and kick wptr again
 	 * to ensure that the hardware has updated correctly.  After that, kick
-	 * it periodically every KGSL_TIMEOUT_PART msecs until the timeout
+	 * it periodically every KGSL_TIMEOUT_HANG_DETECT msecs until the timeout
 	 * expires
 	 */
 

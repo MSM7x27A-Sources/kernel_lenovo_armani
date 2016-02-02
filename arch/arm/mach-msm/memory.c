@@ -1,7 +1,7 @@
 /* arch/arm/mach-msm/memory.c
  *
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2009-2012, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -33,7 +33,6 @@
 #include <linux/completion.h>
 #include <linux/err.h>
 #endif
-#include <linux/android_pmem.h>
 #include <mach/msm_iomap.h>
 #include <mach/socinfo.h>
 #include <linux/sched.h>
@@ -42,7 +41,6 @@
 /* fixme */
 #include <asm/tlbflush.h>
 #include <../../mm/mm.h>
-#include <linux/fmem.h>
 
 #if defined(CONFIG_ARCH_MSM7X27)
 static void *strongly_ordered_page;
@@ -284,6 +282,7 @@ static void __init reserve_memory_for_mempools(void)
 				 * out of multiple contiguous memory banks.
 				 */
 				mt->start = mb->start + (size - mt->size);
+
 				ret = memblock_remove(mt->start, mt->size);
 				BUG_ON(ret);
 				break;
@@ -364,16 +363,6 @@ void store_ttbr0(void)
 	/* Store TTBR0 for post-mortem debugging purposes. */
 	asm("mrc p15, 0, %0, c2, c0, 0\n"
 		: "=r" (msm_ttbr0));
-}
-
-int request_fmem_c_region(void *unused)
-{
-	return fmem_set_state(FMEM_C_STATE);
-}
-
-int release_fmem_c_region(void *unused)
-{
-	return fmem_set_state(FMEM_T_STATE);
 }
 
 unsigned long get_ddr_size(void)

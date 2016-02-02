@@ -1,4 +1,4 @@
-/* Copyright (c) 2002,2007-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2002,2007-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -629,8 +629,8 @@ adreno_ringbuffer_addcmds(struct adreno_ringbuffer *rb,
 
 	if (adreno_is_a3xx(adreno_dev)) {
 		/*
-		 * FLush HLSQ lazy updates to make sure there are no
-		 * rsources pending for indirect loads after the timestamp
+		 * Flush HLSQ lazy updates to make sure there are no
+		 * resources pending for indirect loads after the timestamp
 		 */
 
 		GSL_RB_WRITE(ringcmds, rcmd_gpu,

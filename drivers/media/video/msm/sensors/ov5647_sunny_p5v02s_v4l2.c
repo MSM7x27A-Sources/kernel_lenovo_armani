@@ -13,9 +13,9 @@
 
 #include "msm_sensor.h"
 #include "msm.h"
-#define SENSOR_NAME "ov5647_sunny_p5v02s"
-#define PLATFORM_DRIVER_NAME "msm_camera_ov5647_sunny_p5v02s"
-#define ov5647_sunny_p5v02s_obj ov5647_sunny_p5v02s_##obj
+#define SENSOR_NAME "ov5647"
+#define PLATFORM_DRIVER_NAME "msm_camera_ov5647"
+#define ov5647_obj ov5647_##obj
 
 #ifdef CDBG
 #undef CDBG
@@ -35,28 +35,28 @@
 #endif
 //int lcd_camera_power_onoff(int on);
 #define OV5647_SUNNY_P5V02S_OTP_FEATURE
-static struct msm_sensor_ctrl_t ov5647_sunny_p5v02s_s_ctrl;
+static struct msm_sensor_ctrl_t ov5647_s_ctrl;
 
-DEFINE_MUTEX(ov5647_sunny_p5v02s_mut);
+DEFINE_MUTEX(ov5647_mut);
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_start_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_start_settings[] = {
 	{0x4202, 0x00},  /* streaming on */
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_stop_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_stop_settings[] = {
 	{0x4202, 0x0f},  /* streaming off*/
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_groupon_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_groupon_settings[] = {
 	{0x3208, 0x0},
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_groupoff_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_groupoff_settings[] = {
 	{0x3208, 0x10},
 	{0x3208, 0xa0},
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_prev_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_prev_settings[] = {
 	/*1296*972 preview*/
 	{0x5000, 0x86},
 	{0x3035, 0x21},
@@ -97,7 +97,7 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_prev_settings[] = {
 #endif
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_snap_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_snap_settings[] = {
 	/* 2592*1944 capture */
 	{0x3035, 0x21},
 	{0x3036, 0x4f},
@@ -137,7 +137,7 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_snap_settings[] = {
 #endif
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_video_60fps_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_video_60fps_settings[] = {
 	{0x3035, 0x21},
 	{0x3036, 0x38},
 #if defined(CONFIG_HW_ARMANI)|defined(CONFIG_HW_AUDI)
@@ -172,7 +172,7 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_video_60fps_settings[]
 	{0x4004, 0x02},
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_video_90fps_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_video_90fps_settings[] = {
 	{0x3035, 0x11},
 	{0x3036, 0x2a},
 #if defined(CONFIG_HW_ARMANI)|defined(CONFIG_HW_AUDI)
@@ -207,7 +207,7 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_video_90fps_settings[]
 	{0x4004, 0x02},
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_zsl_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_zsl_settings[] = {
 	{0x3035, 0x21},
 	{0x3036, 0x2f},
 #if defined(CONFIG_HW_ARMANI)|defined(CONFIG_HW_AUDI)
@@ -242,7 +242,7 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_zsl_settings[] = {
 	{0x4004, 0x04},
 };
 
-static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_recommend_settings[] = {
+static struct msm_camera_i2c_reg_conf ov5647_recommend_settings[] = {
 	{0x3035, 0x11},
 	{0x303c, 0x11},
 	{0x370c, 0x03},
@@ -518,25 +518,25 @@ static struct msm_camera_i2c_reg_conf ov5647_sunny_p5v02s_recommend_settings[] =
 };
 
 
-static struct msm_camera_i2c_conf_array ov5647_sunny_p5v02s_init_conf[] = {
-	{&ov5647_sunny_p5v02s_recommend_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_recommend_settings), 0, MSM_CAMERA_I2C_BYTE_DATA}
+static struct msm_camera_i2c_conf_array ov5647_init_conf[] = {
+	{&ov5647_recommend_settings[0],
+	ARRAY_SIZE(ov5647_recommend_settings), 0, MSM_CAMERA_I2C_BYTE_DATA}
 };
 
-static struct msm_camera_i2c_conf_array ov5647_sunny_p5v02s_confs[] = {
-	{&ov5647_sunny_p5v02s_snap_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_snap_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-	{&ov5647_sunny_p5v02s_prev_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_prev_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-	{&ov5647_sunny_p5v02s_video_60fps_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_video_60fps_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-	{&ov5647_sunny_p5v02s_video_90fps_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_video_90fps_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-	{&ov5647_sunny_p5v02s_zsl_settings[0],
-	ARRAY_SIZE(ov5647_sunny_p5v02s_zsl_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
+static struct msm_camera_i2c_conf_array ov5647_confs[] = {
+	{&ov5647_snap_settings[0],
+	ARRAY_SIZE(ov5647_snap_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
+	{&ov5647_prev_settings[0],
+	ARRAY_SIZE(ov5647_prev_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
+	{&ov5647_video_60fps_settings[0],
+	ARRAY_SIZE(ov5647_video_60fps_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
+	{&ov5647_video_90fps_settings[0],
+	ARRAY_SIZE(ov5647_video_90fps_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
+	{&ov5647_zsl_settings[0],
+	ARRAY_SIZE(ov5647_zsl_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
 };
 
-static struct msm_camera_csi_params ov5647_sunny_p5v02s_csi_params = {
+static struct msm_camera_csi_params ov5647_csi_params = {
 	.data_format = CSI_8BIT,
 	.lane_cnt    = 2,
 	.lane_assign = 0xe4,
@@ -544,7 +544,7 @@ static struct msm_camera_csi_params ov5647_sunny_p5v02s_csi_params = {
 	.settle_cnt  = 10,
 };
 
-static struct v4l2_subdev_info ov5647_sunny_p5v02s_subdev_info[] = {
+static struct v4l2_subdev_info ov5647_subdev_info[] = {
 	{
 		.code   = V4L2_MBUS_FMT_SBGGR10_1X10,
 		.colorspace = V4L2_COLORSPACE_JPEG,
@@ -554,7 +554,7 @@ static struct v4l2_subdev_info ov5647_sunny_p5v02s_subdev_info[] = {
 	/* more can be supported, to be added later */
 };
 
-static struct msm_sensor_output_info_t ov5647_sunny_p5v02s_dimensions[] = {
+static struct msm_sensor_output_info_t ov5647_dimensions[] = {
 	{ /* For SNAPSHOT */
 		.x_output = 0xa20,         /*2592*/
 		.y_output = 0x798,         /*1944*/
@@ -603,33 +603,33 @@ static struct msm_sensor_output_info_t ov5647_sunny_p5v02s_dimensions[] = {
 
 };
 
-static struct msm_sensor_output_reg_addr_t ov5647_sunny_p5v02s_reg_addr = {
+static struct msm_sensor_output_reg_addr_t ov5647_reg_addr = {
 	.x_output = 0x3808,
 	.y_output = 0x380A,
 	.line_length_pclk = 0x380C,
 	.frame_length_lines = 0x380E,
 };
 
-static struct msm_camera_csi_params *ov5647_sunny_p5v02s_csi_params_array[] = {
-	&ov5647_sunny_p5v02s_csi_params, /* Snapshot */
-	&ov5647_sunny_p5v02s_csi_params, /* Preview */
-	&ov5647_sunny_p5v02s_csi_params, /* 60fps */
-	&ov5647_sunny_p5v02s_csi_params, /* 90fps */
-	&ov5647_sunny_p5v02s_csi_params, /* ZSL */
+static struct msm_camera_csi_params *ov5647_csi_params_array[] = {
+	&ov5647_csi_params, /* Snapshot */
+	&ov5647_csi_params, /* Preview */
+	&ov5647_csi_params, /* 60fps */
+	&ov5647_csi_params, /* 90fps */
+	&ov5647_csi_params, /* ZSL */
 };
 
-static struct msm_sensor_id_info_t ov5647_sunny_p5v02s_id_info = {
+static struct msm_sensor_id_info_t ov5647_id_info = {
 	.sensor_id_reg_addr = 0x300a,
 	.sensor_id = 0x5647,
 };
 
-static struct msm_sensor_exp_gain_info_t ov5647_sunny_p5v02s_exp_gain_info = {
+static struct msm_sensor_exp_gain_info_t ov5647_exp_gain_info = {
 	.coarse_int_time_addr = 0x3500,
 	.global_gain_addr = 0x350A,
 	.vert_offset = 4,
 };
 
-void ov5647_sunny_p5v02s_sensor_reset_stream(struct msm_sensor_ctrl_t *s_ctrl)
+void ov5647_sensor_reset_stream(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	msm_camera_i2c_write(
 		s_ctrl->sensor_i2c_client,
@@ -648,7 +648,7 @@ struct otp_struct {
 	uint8_t rg_ratio;
 	uint8_t bg_ratio;
 	uint8_t user_data[5];
-} st_ov5647_sunny_p5v02s_otp;
+} st_ov5647_otp;
 
 /*******************************************************************************
 * index: index of otp group. (0, 1, 2)
@@ -657,7 +657,7 @@ struct otp_struct {
 *     1, group index has invalid data
 *     2, group index has valid data
 *******************************************************************************/
-uint16_t ov5647_sunny_p5v02s_check_otp(struct msm_sensor_ctrl_t *s_ctrl, uint16_t index)
+uint16_t ov5647_check_otp(struct msm_sensor_ctrl_t *s_ctrl, uint16_t index)
 {
 	uint16_t temp, i;
 	uint16_t address;
@@ -690,7 +690,7 @@ uint16_t ov5647_sunny_p5v02s_check_otp(struct msm_sensor_ctrl_t *s_ctrl, uint16_
 /*******************************************************************************
 *
 *******************************************************************************/
-void ov5647_sunny_p5v02s_read_otp(struct msm_sensor_ctrl_t *s_ctrl,
+void ov5647_read_otp(struct msm_sensor_ctrl_t *s_ctrl,
 		uint16_t index, struct otp_struct *potp)
 {
 	uint16_t temp, i;
@@ -765,7 +765,7 @@ void ov5647_sunny_p5v02s_read_otp(struct msm_sensor_ctrl_t *s_ctrl,
 * G_gain, sensor green gain of AWB, 0x400 =1
 * B_gain, sensor blue gain of AWB, 0x400 =1
 *******************************************************************************/
-void ov5647_sunny_p5v02s_update_awb_gain(struct msm_sensor_ctrl_t *s_ctrl,
+void ov5647_update_awb_gain(struct msm_sensor_ctrl_t *s_ctrl,
 		uint16_t R_gain, uint16_t G_gain, uint16_t B_gain)
 {
 	CDBG("%s R_gain = 0x%04x\r\n", __func__, R_gain);
@@ -802,7 +802,7 @@ void ov5647_sunny_p5v02s_update_awb_gain(struct msm_sensor_ctrl_t *s_ctrl,
 *     0, update success
 *     1, no OTP
 *******************************************************************************/
-uint16_t ov5647_sunny_p5v02s_update_otp(struct msm_sensor_ctrl_t *s_ctrl)
+uint16_t ov5647_update_otp(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	uint16_t i;
 	uint16_t otp_index;
@@ -811,7 +811,7 @@ uint16_t ov5647_sunny_p5v02s_update_otp(struct msm_sensor_ctrl_t *s_ctrl)
 	/* R/G and B/G of current camera module is read out from sensor OTP */
 	/* check first OTP with valid data */
 	for (i = 0; i < 3; i++) {
-		temp = ov5647_sunny_p5v02s_check_otp(s_ctrl, i);
+		temp = ov5647_check_otp(s_ctrl, i);
 		if (temp == 2) {
 			otp_index = i;
 			break;
@@ -822,64 +822,64 @@ uint16_t ov5647_sunny_p5v02s_update_otp(struct msm_sensor_ctrl_t *s_ctrl)
 		CDBG("no valid wb OTP data\r\n");
 		return 1;
 	}
-	ov5647_sunny_p5v02s_read_otp(s_ctrl, otp_index, &st_ov5647_sunny_p5v02s_otp);
+	ov5647_read_otp(s_ctrl, otp_index, &st_ov5647_otp);
 	/* calculate G_gain */
 	/* 0x400 = 1x gain */
-	if (st_ov5647_sunny_p5v02s_otp.bg_ratio < OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE) {
-		if (st_ov5647_sunny_p5v02s_otp.rg_ratio < OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE) {
+	if (st_ov5647_otp.bg_ratio < OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE) {
+		if (st_ov5647_otp.rg_ratio < OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE) {
 			G_gain = 0x400;
 			B_gain = 0x400 *
 				OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE /
-				st_ov5647_sunny_p5v02s_otp.bg_ratio;
+				st_ov5647_otp.bg_ratio;
 			R_gain = 0x400 *
 				OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE /
-				st_ov5647_sunny_p5v02s_otp.rg_ratio;
+				st_ov5647_otp.rg_ratio;
 		} else {
 			R_gain = 0x400;
 			G_gain = 0x400 *
-				st_ov5647_sunny_p5v02s_otp.rg_ratio /
+				st_ov5647_otp.rg_ratio /
 				OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE;
 			B_gain = G_gain *
 				OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE /
-				st_ov5647_sunny_p5v02s_otp.bg_ratio;
+				st_ov5647_otp.bg_ratio;
 		}
 	} else {
-		if (st_ov5647_sunny_p5v02s_otp.rg_ratio < OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE) {
+		if (st_ov5647_otp.rg_ratio < OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE) {
 			B_gain = 0x400;
 			G_gain = 0x400 *
-				st_ov5647_sunny_p5v02s_otp.bg_ratio /
+				st_ov5647_otp.bg_ratio /
 				OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE;
 			R_gain = G_gain *
 				OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE /
-				st_ov5647_sunny_p5v02s_otp.rg_ratio;
+				st_ov5647_otp.rg_ratio;
 		} else {
 			G_gain_B = 0x400 *
-				st_ov5647_sunny_p5v02s_otp.bg_ratio /
+				st_ov5647_otp.bg_ratio /
 				OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE;
 			G_gain_R = 0x400 *
-				st_ov5647_sunny_p5v02s_otp.rg_ratio /
+				st_ov5647_otp.rg_ratio /
 				OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE;
 			if (G_gain_B > G_gain_R) {
 				B_gain = 0x400;
 				G_gain = G_gain_B;
 				R_gain = G_gain *
 					OV5647_SUNNY_P5V02S_RG_RATIO_TYPICAL_VALUE /
-					st_ov5647_sunny_p5v02s_otp.rg_ratio;
+					st_ov5647_otp.rg_ratio;
 			} else {
 				R_gain = 0x400;
 				G_gain = G_gain_R;
 				B_gain = G_gain *
 					OV5647_SUNNY_P5V02S_BG_RATIO_TYPICAL_VALUE /
-					st_ov5647_sunny_p5v02s_otp.bg_ratio;
+					st_ov5647_otp.bg_ratio;
 			}
 		}
 	}
-	ov5647_sunny_p5v02s_update_awb_gain(s_ctrl, R_gain, G_gain, B_gain);
+	ov5647_update_awb_gain(s_ctrl, R_gain, G_gain, B_gain);
 	return 0;
 }
 #endif
 
-static int32_t ov5647_sunny_p5v02s_write_pict_exp_gain(struct msm_sensor_ctrl_t *s_ctrl,
+static int32_t ov5647_write_pict_exp_gain(struct msm_sensor_ctrl_t *s_ctrl,
 		uint16_t gain, uint32_t line)
 {
 
@@ -924,7 +924,7 @@ static int32_t ov5647_sunny_p5v02s_write_pict_exp_gain(struct msm_sensor_ctrl_t 
 	}
 
 	line = line<<4;
-	/* ov5647_sunny_p5v02s need this operation */
+	/* ov5647 need this operation */
 	intg_time_hsb = (u8)(line>>16);
 	intg_time_msb = (u8) ((line & 0xFF00) >> 8);
 	intg_time_lsb = (u8) (line & 0x00FF);
@@ -993,7 +993,7 @@ static int32_t ov5647_sunny_p5v02s_write_pict_exp_gain(struct msm_sensor_ctrl_t 
 }
 
 
-static int32_t ov5647_sunny_p5v02s_write_prev_exp_gain(struct msm_sensor_ctrl_t *s_ctrl,
+static int32_t ov5647_write_prev_exp_gain(struct msm_sensor_ctrl_t *s_ctrl,
 						uint16_t gain, uint32_t line)
 {
 	u8 intg_time_hsb, intg_time_msb, intg_time_lsb;
@@ -1026,7 +1026,7 @@ static int32_t ov5647_sunny_p5v02s_write_prev_exp_gain(struct msm_sensor_ctrl_t 
 		MSM_CAMERA_I2C_BYTE_DATA);
 
 	line = line<<4;
-	/* ov5647_sunny_p5v02s need this operation */
+	/* ov5647 need this operation */
 	intg_time_hsb = (u8)(line>>16);
 	intg_time_msb = (u8) ((line & 0xFF00) >> 8);
 	intg_time_lsb = (u8) (line & 0x00FF);
@@ -1065,12 +1065,12 @@ static int32_t ov5647_sunny_p5v02s_write_prev_exp_gain(struct msm_sensor_ctrl_t 
 	return 0;
 }
 
-static const struct i2c_device_id ov5647_sunny_p5v02s_i2c_id[] = {
-	{SENSOR_NAME, (kernel_ulong_t)&ov5647_sunny_p5v02s_s_ctrl},
+static const struct i2c_device_id ov5647_i2c_id[] = {
+	{SENSOR_NAME, (kernel_ulong_t)&ov5647_s_ctrl},
 	{ }
 };
 extern void camera_af_software_powerdown(struct i2c_client *client);
-int32_t ov5647_sunny_p5v02s_sensor_i2c_probe(struct i2c_client *client,
+int32_t ov5647_sensor_i2c_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
 	int32_t rc = 0;
@@ -1097,38 +1097,38 @@ int32_t ov5647_sunny_p5v02s_sensor_i2c_probe(struct i2c_client *client,
 	return rc;
 }
 
-static struct i2c_driver ov5647_sunny_p5v02s_i2c_driver = {
-	.id_table = ov5647_sunny_p5v02s_i2c_id,
-	.probe  = ov5647_sunny_p5v02s_sensor_i2c_probe,
+static struct i2c_driver ov5647_i2c_driver = {
+	.id_table = ov5647_i2c_id,
+	.probe  = ov5647_sensor_i2c_probe,
 	.driver = {
 		.name = SENSOR_NAME,
 	},
 };
 
-static struct msm_camera_i2c_client ov5647_sunny_p5v02s_sensor_i2c_client = {
+static struct msm_camera_i2c_client ov5647_sensor_i2c_client = {
 	.addr_type = MSM_CAMERA_I2C_WORD_ADDR,
 };
 
 static int __init msm_sensor_init_module(void)
 {
-	return i2c_add_driver(&ov5647_sunny_p5v02s_i2c_driver);
+	return i2c_add_driver(&ov5647_i2c_driver);
 }
 
-static struct v4l2_subdev_core_ops ov5647_sunny_p5v02s_subdev_core_ops = {
+static struct v4l2_subdev_core_ops ov5647_subdev_core_ops = {
 	.ioctl = msm_sensor_subdev_ioctl,
 	.s_power = msm_sensor_power,
 };
 
-static struct v4l2_subdev_video_ops ov5647_sunny_p5v02s_subdev_video_ops = {
+static struct v4l2_subdev_video_ops ov5647_subdev_video_ops = {
 	.enum_mbus_fmt = msm_sensor_v4l2_enum_fmt,
 };
 
-static struct v4l2_subdev_ops ov5647_sunny_p5v02s_subdev_ops = {
-	.core = &ov5647_sunny_p5v02s_subdev_core_ops,
-	.video  = &ov5647_sunny_p5v02s_subdev_video_ops,
+static struct v4l2_subdev_ops ov5647_subdev_ops = {
+	.core = &ov5647_subdev_core_ops,
+	.video  = &ov5647_subdev_video_ops,
 };
 
-int32_t ov5647_sunny_p5v02s_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
+int32_t ov5647_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	struct msm_camera_sensor_info *info = NULL;
 	unsigned short rdata;
@@ -1142,7 +1142,7 @@ int32_t ov5647_sunny_p5v02s_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 	msleep(40);
 	rc = msm_camera_i2c_read(s_ctrl->sensor_i2c_client, 0x3018,
 			&rdata, MSM_CAMERA_I2C_BYTE_DATA);
-	CDBG("ov5647_sunny_p5v02s_sensor_power_down: %d\n", rc);
+	CDBG("ov5647_sensor_power_down: %d\n", rc);
 	rdata |= 0x18;
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client,
 		0x3018, rdata,
@@ -1159,7 +1159,7 @@ int32_t ov5647_sunny_p5v02s_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 	return 0;
 }
 
-int32_t ov5647_sunny_p5v02s_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
+int32_t ov5647_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int32_t rc = 0;
 	struct msm_camera_sensor_info *info = s_ctrl->sensordata;
@@ -1194,7 +1194,7 @@ int32_t ov5647_sunny_p5v02s_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 
 static int32_t vfe_clk = 266667000;
 static int is_first_preview = 1;
-int32_t ov5647_sunny_p5v02s_sensor_setting(struct msm_sensor_ctrl_t *s_ctrl,
+int32_t ov5647_sensor_setting(struct msm_sensor_ctrl_t *s_ctrl,
 			int update_type, int res)
 {
 	int32_t rc = 0;
@@ -1226,7 +1226,7 @@ int32_t ov5647_sunny_p5v02s_sensor_setting(struct msm_sensor_ctrl_t *s_ctrl,
 		CDBG("Update OTP\n");
 		msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x100, 0x1,
 				MSM_CAMERA_I2C_BYTE_DATA);
-		ov5647_sunny_p5v02s_update_otp(s_ctrl);
+		ov5647_update_otp(s_ctrl);
 		usleep_range(5000, 6000);
 		msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x100, 0x0,
 		  MSM_CAMERA_I2C_BYTE_DATA);
@@ -1282,56 +1282,56 @@ int32_t ov5647_sunny_p5v02s_sensor_setting(struct msm_sensor_ctrl_t *s_ctrl,
 	return rc;
 }
 
-static struct msm_sensor_fn_t ov5647_sunny_p5v02s_func_tbl = {
+static struct msm_sensor_fn_t ov5647_func_tbl = {
 	.sensor_start_stream = msm_sensor_start_stream,
 	.sensor_stop_stream = msm_sensor_stop_stream,
 	.sensor_group_hold_on = msm_sensor_group_hold_on,
 	.sensor_group_hold_off = msm_sensor_group_hold_off,
 	.sensor_set_fps = msm_sensor_set_fps,
-	.sensor_write_exp_gain = ov5647_sunny_p5v02s_write_prev_exp_gain,
-	.sensor_write_snapshot_exp_gain = ov5647_sunny_p5v02s_write_pict_exp_gain,
-	.sensor_csi_setting = ov5647_sunny_p5v02s_sensor_setting,
+	.sensor_write_exp_gain = ov5647_write_prev_exp_gain,
+	.sensor_write_snapshot_exp_gain = ov5647_write_pict_exp_gain,
+	.sensor_csi_setting = ov5647_sensor_setting,
 	.sensor_set_sensor_mode = msm_sensor_set_sensor_mode,
 	.sensor_mode_init = msm_sensor_mode_init,
 	.sensor_get_output_info = msm_sensor_get_output_info,
 	.sensor_config = msm_sensor_config,
-	.sensor_power_up = ov5647_sunny_p5v02s_sensor_power_up,
-	.sensor_power_down = ov5647_sunny_p5v02s_sensor_power_down,
+	.sensor_power_up = ov5647_sensor_power_up,
+	.sensor_power_down = ov5647_sensor_power_down,
 };
 
-static struct msm_sensor_reg_t ov5647_sunny_p5v02s_regs = {
+static struct msm_sensor_reg_t ov5647_regs = {
 	.default_data_type = MSM_CAMERA_I2C_BYTE_DATA,
-	.start_stream_conf = ov5647_sunny_p5v02s_start_settings,
-	.start_stream_conf_size = ARRAY_SIZE(ov5647_sunny_p5v02s_start_settings),
-	.stop_stream_conf = ov5647_sunny_p5v02s_stop_settings,
-	.stop_stream_conf_size = ARRAY_SIZE(ov5647_sunny_p5v02s_stop_settings),
-	.group_hold_on_conf = ov5647_sunny_p5v02s_groupon_settings,
-	.group_hold_on_conf_size = ARRAY_SIZE(ov5647_sunny_p5v02s_groupon_settings),
-	.group_hold_off_conf = ov5647_sunny_p5v02s_groupoff_settings,
+	.start_stream_conf = ov5647_start_settings,
+	.start_stream_conf_size = ARRAY_SIZE(ov5647_start_settings),
+	.stop_stream_conf = ov5647_stop_settings,
+	.stop_stream_conf_size = ARRAY_SIZE(ov5647_stop_settings),
+	.group_hold_on_conf = ov5647_groupon_settings,
+	.group_hold_on_conf_size = ARRAY_SIZE(ov5647_groupon_settings),
+	.group_hold_off_conf = ov5647_groupoff_settings,
 	.group_hold_off_conf_size =
-		ARRAY_SIZE(ov5647_sunny_p5v02s_groupoff_settings),
-	.init_settings = &ov5647_sunny_p5v02s_init_conf[0],
-	.init_size = ARRAY_SIZE(ov5647_sunny_p5v02s_init_conf),
-	.mode_settings = &ov5647_sunny_p5v02s_confs[0],
-	.output_settings = &ov5647_sunny_p5v02s_dimensions[0],
-	.num_conf = ARRAY_SIZE(ov5647_sunny_p5v02s_confs),
+		ARRAY_SIZE(ov5647_groupoff_settings),
+	.init_settings = &ov5647_init_conf[0],
+	.init_size = ARRAY_SIZE(ov5647_init_conf),
+	.mode_settings = &ov5647_confs[0],
+	.output_settings = &ov5647_dimensions[0],
+	.num_conf = ARRAY_SIZE(ov5647_confs),
 };
 
-static struct msm_sensor_ctrl_t ov5647_sunny_p5v02s_s_ctrl = {
-	.msm_sensor_reg = &ov5647_sunny_p5v02s_regs,
-	.sensor_i2c_client = &ov5647_sunny_p5v02s_sensor_i2c_client,
+static struct msm_sensor_ctrl_t ov5647_s_ctrl = {
+	.msm_sensor_reg = &ov5647_regs,
+	.sensor_i2c_client = &ov5647_sensor_i2c_client,
 	.sensor_i2c_addr =  0x36 << 1 ,
-	.sensor_output_reg_addr = &ov5647_sunny_p5v02s_reg_addr,
-	.sensor_id_info = &ov5647_sunny_p5v02s_id_info,
-	.sensor_exp_gain_info = &ov5647_sunny_p5v02s_exp_gain_info,
+	.sensor_output_reg_addr = &ov5647_reg_addr,
+	.sensor_id_info = &ov5647_id_info,
+	.sensor_exp_gain_info = &ov5647_exp_gain_info,
 	.cam_mode = MSM_SENSOR_MODE_INVALID,
-	.csic_params = &ov5647_sunny_p5v02s_csi_params_array[0],
-	.msm_sensor_mutex = &ov5647_sunny_p5v02s_mut,
-	.sensor_i2c_driver = &ov5647_sunny_p5v02s_i2c_driver,
-	.sensor_v4l2_subdev_info = ov5647_sunny_p5v02s_subdev_info,
-	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(ov5647_sunny_p5v02s_subdev_info),
-	.sensor_v4l2_subdev_ops = &ov5647_sunny_p5v02s_subdev_ops,
-	.func_tbl = &ov5647_sunny_p5v02s_func_tbl,
+	.csic_params = &ov5647_csi_params_array[0],
+	.msm_sensor_mutex = &ov5647_mut,
+	.sensor_i2c_driver = &ov5647_i2c_driver,
+	.sensor_v4l2_subdev_info = ov5647_subdev_info,
+	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(ov5647_subdev_info),
+	.sensor_v4l2_subdev_ops = &ov5647_subdev_ops,
+	.func_tbl = &ov5647_func_tbl,
 	.clk_rate = MSM_SENSOR_MCLK_24HZ,
 };
 

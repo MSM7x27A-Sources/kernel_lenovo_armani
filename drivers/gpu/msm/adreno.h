@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2008-2012,2014 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -190,8 +190,8 @@ struct adreno_gpudev {
 };
 
 /*
- * struct adreno_recovery_data - Structure that contains all information to
- * perform gpu recovery from hangs
+ * struct adreno_ft_data - Structure that contains all information to
+ * perform gpu fault tolerance
  * @ib1 - IB1 that the GPU was executing when hang happened
  * @context_id - Context which caused the hang
  * @global_eop - eoptimestamp at time of hang
@@ -199,8 +199,17 @@ struct adreno_gpudev {
  * @rb_size - Number of valid dwords in rb_buffer
  * @bad_rb_buffer - Buffer that holds commands from the hanging context
  * bad_rb_size - Number of valid dwords in bad_rb_buffer
+ * @good_rb_buffer - Buffer that holds commands from good contexts
+ * good_rb_size - Number of valid dwords in good_rb_buffer
  * @last_valid_ctx_id - The last context from which commands were placed in
  * ringbuffer before the GPU hung
+ * @step - Current fault tolerance step being executed
+ * @err_code - Fault tolerance error code
+ * @fault - Indicates whether the hang was caused due to a pagefault
+ * @start_of_replay_cmds - Offset in ringbuffer from where commands can be
+ * replayed during fault tolerance
+ * @replay_for_snapshot - Offset in ringbuffer where IB's can be saved for
+ * replaying with snapshot
  */
 struct adreno_ft_data {
 	unsigned int ib1;

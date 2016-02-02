@@ -22,7 +22,8 @@
 #include <linux/module.h>
 
 #define FB_SYSFS_FLAG_ATTR 1
-extern void msm_fb_set_keyboardbacklight(__u32 key_blan);
+
+//extern void msm_fb_set_keyboardbacklight(__u32 key_blan);
 
 /**
  * framebuffer_alloc - creates a new frame buffer info structure
@@ -318,6 +319,7 @@ static ssize_t show_blank(struct device *device,
 //	struct fb_info *fb_info = dev_get_drvdata(device);
 	return 0;
 }
+#if 0
 static ssize_t store_keyblan(struct device *device,
 			   struct device_attribute *attr,
 			   const char *buf, size_t count)
@@ -338,7 +340,7 @@ static ssize_t show_keyblan(struct device *device,
 //	struct fb_info *fb_info = dev_get_drvdata(device);
 	return 0;
 }
-
+#endif
 static ssize_t store_console(struct device *device,
 			     struct device_attribute *attr,
 			     const char *buf, size_t count)
@@ -516,7 +518,7 @@ static ssize_t show_bl_curve(struct device *device,
 static struct device_attribute device_attrs[] = {
 	__ATTR(bits_per_pixel, S_IRUGO|S_IWUSR, show_bpp, store_bpp),
 	__ATTR(blank, S_IRUGO|S_IWUSR, show_blank, store_blank),
-	__ATTR(keyblan, S_IRUGO|S_IWUSR, show_keyblan, store_keyblan),
+	//__ATTR(keyblan, S_IRUGO|S_IWUSR, show_keyblan, store_keyblan),
 	__ATTR(console, S_IRUGO|S_IWUSR, show_console, store_console),
 	__ATTR(cursor, S_IRUGO|S_IWUSR, show_cursor, store_cursor),
 	__ATTR(mode, S_IRUGO|S_IWUSR, show_mode, store_mode),
