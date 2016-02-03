@@ -106,9 +106,6 @@ static int mipi_dsi_off(struct platform_device *pdev)
 	}
 
 	ret = panel_next_off(pdev);
-#ifdef CONFIG_MSM_BUS_SCALING
-	mdp_bus_scale_update_request(0);
-#endif
 
 	spin_lock_bh(&dsi_clk_lock);
 	mipi_dsi_clk_disable();
@@ -371,7 +368,7 @@ static int mipi_dsi_probe(struct platform_device *pdev)
 		}
 
 		dsi_irq = platform_get_irq(pdev, 0);
-		if (dsi_irq < 0) {
+		if ((int)dsi_irq < 0) {
 			pr_err("mipi_dsi: can not get mdp irq\n");
 			return -ENOMEM;
 		}
