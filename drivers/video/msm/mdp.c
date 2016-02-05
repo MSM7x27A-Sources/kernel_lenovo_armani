@@ -982,7 +982,6 @@ int mdp_histogram_start(struct mdp_histogram_start_req *req)
 	mgmt->frame_cnt = req->frame_cnt;
 	mgmt->bit_mask = req->bit_mask;
 	mgmt->num_bins = req->num_bins;
-	mgmt->hist = NULL;
 
 	ret = mdp_histogram_enable(mgmt);
 
@@ -2604,11 +2603,13 @@ static int mdp_probe(struct platform_device *pdev)
 	struct mipi_panel_info *mipi;
 #endif
         static int contSplash_update_done;
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 	void *splash_virt_addr;
 	int cur_page;
 	unsigned long cur_addr;
 	struct splash_pages page_data;
-
+#endif
 
 	if ((pdev->id == 0) && (pdev->num_resources > 0)) {
 		mdp_init_pdev = pdev;
@@ -2647,7 +2648,12 @@ static int mdp_probe(struct platform_device *pdev)
 		if (!(mdp_pdata->cont_splash_enabled))
 			mdp4_hw_init();
 #else
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 		mdp_hw_init(mdp_pdata->cont_splash_enabled);
+#else
+		mdp_hw_init();
+#endif
 #endif
 
 #ifdef CONFIG_FB_MSM_OVERLAY
@@ -2686,6 +2692,8 @@ static int mdp_probe(struct platform_device *pdev)
 
         if (mdp_pdata) {
 		if (mdp_pdata->cont_splash_enabled) {
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 			uint32 bpp = 3;
 			mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
 			/*read panel wxh and calculate splash screen
@@ -2749,6 +2757,7 @@ static int mdp_probe(struct platform_device *pdev)
 			MDP_OUTP(MDP_BASE + 0x90008,
 				mfd->copy_splash_phys);
 			mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
+#endif
 
 			mfd->cont_splash_done = 0;
 			if (!contSplash_update_done) {
@@ -2770,12 +2779,18 @@ static int mdp_probe(struct platform_device *pdev)
 		mfd->ov0_wb_buf->size = mdp_pdata->ov0_wb_size;
 		mfd->ov1_wb_buf->size = mdp_pdata->ov1_wb_size;
 		mfd->mem_hid = mdp_pdata->mem_hid;
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 		mfd->avtimer_phy = mdp_pdata->avtimer_phy;
+#endif
 	} else {
 		mfd->ov0_wb_buf->size = 0;
 		mfd->ov1_wb_buf->size = 0;
 		mfd->mem_hid = 0;
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 		mfd->avtimer_phy = 0;
+#endif
 	}
 
 	/* initialize Post Processing data*/
@@ -2901,7 +2916,9 @@ static int mdp_probe(struct platform_device *pdev)
 		pdata->off = mdp_dsi_video_off;
 		mfd->hw_refresh = TRUE;
 		mfd->dma_fnc = mdp_dsi_video_update;
+
 		mfd->do_histogram = mdp_do_histogram;
+
 		mfd->start_histogram = mdp_histogram_start;
 		mfd->stop_histogram = mdp_histogram_stop;
 		mfd->vsync_ctrl = mdp_dma_video_vsync_ctrl;
@@ -3196,6 +3213,8 @@ void mdp_footswitch_ctrl(boolean on)
 	mutex_unlock(&mdp_suspend_mutex);
 }
 
+//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
+#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
 void mdp_free_splash_buffer(struct msm_fb_data_type *mfd)
 {
 	if (mfd->copy_splash_buf) {
@@ -3206,6 +3225,7 @@ void mdp_free_splash_buffer(struct msm_fb_data_type *mfd)
 		mfd->copy_splash_buf = NULL;
 	}
 }
+#endif
 
 #ifdef CONFIG_PM
 static void mdp_suspend_sub(void)

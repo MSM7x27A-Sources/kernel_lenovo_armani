@@ -63,6 +63,7 @@ static struct platform_driver mipi_dsi_driver = {
 
 struct device dsi_dev;
 
+#define DSI_VIDEO_BASE	0xF0000
 static int mipi_dsi_off(struct platform_device *pdev)
 {
 	int ret = 0;
