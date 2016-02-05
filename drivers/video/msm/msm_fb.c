@@ -1543,6 +1543,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 	fbi->screen_base = fbram;
 	fbi->fix.smem_start = (unsigned long)fbram_phys;
+	
         memset(fbi->screen_base, 0x0, fix->smem_len);
 
 	msm_iommu_map_contig_buffer(fbi->fix.smem_start,
@@ -2112,12 +2113,6 @@ static int msm_fb_pan_display_sub(struct fb_var_screeninfo *var,
 	if (!hack_lcd && unset_bl_level && !bl_updated)
 		schedule_delayed_work(&mfd->backlight_worker,
 				backlight_duration);
-
-//[Caio99BR][caiooliveirafarias0@gmail.com] Workaround for broken fb0 with splash_screen
-#ifndef CONFIG_MACH_LGE_2ND_GEN_KK_WORKAROUD
-	if (info->node == 0 && (mfd->cont_splash_done)) /* primary */
-		mdp_free_splash_buffer(mfd);
-#endif
 
 	++mfd->panel_info.frame_count;
 	return 0;
