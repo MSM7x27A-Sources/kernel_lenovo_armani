@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -2491,7 +2491,6 @@ static ssize_t otg_mode_write(struct file *file, const char __user *buf,
 		set_bit(ID, &dev->inputs);
 		work = 1;
 	} else if (!memcmp(buf, "peripheral", 10)) {
-		dev->pdata->otg_mode = OTG_ID;
 		set_bit(B_SESS_VLD, &dev->inputs);
 		set_bit(ID, &dev->inputs);
 		work = 1;

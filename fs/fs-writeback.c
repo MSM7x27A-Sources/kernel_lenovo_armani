@@ -904,7 +904,7 @@ long wb_do_writeback(struct bdi_writeback *wb, int force_wait)
 		if (force_wait)
 			work->sync_mode = WB_SYNC_ALL;
 
-//		trace_writeback_exec(bdi, work);
+		trace_writeback_exec(bdi, work);
 
 		wrote += wb_writeback(wb, work);
 
@@ -947,7 +947,7 @@ int bdi_writeback_thread(void *data)
 	 */
 	set_user_nice(current, 0);
 
-//	trace_writeback_thread_start(bdi);
+	trace_writeback_thread_start(bdi);
 
 	while (!kthread_freezable_should_stop(NULL)) {
 		/*
@@ -958,7 +958,7 @@ int bdi_writeback_thread(void *data)
 
 		pages_written = wb_do_writeback(wb, 0);
 
-//		trace_writeback_pages_written(pages_written);
+		trace_writeback_pages_written(pages_written);
 
 		if (pages_written)
 			wb->last_active = jiffies;
@@ -985,7 +985,7 @@ int bdi_writeback_thread(void *data)
 	if (!list_empty(&bdi->work_list))
 		wb_do_writeback(wb, 1);
 
-//	trace_writeback_thread_stop(bdi);
+	trace_writeback_thread_stop(bdi);
 	return 0;
 }
 
@@ -998,8 +998,10 @@ void wakeup_flusher_threads(long nr_pages, enum wb_reason reason)
 {
 	struct backing_dev_info *bdi;
 
-if (!nr_pages)
-		nr_pages = get_nr_dirty_pages();
+	if (!nr_pages) {
+		nr_pages = global_page_state(NR_FILE_DIRTY) +
+				global_page_state(NR_UNSTABLE_NFS);
+	}
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(bdi, &bdi_list, bdi_list) {
@@ -1116,9 +1118,6 @@ void __mark_inode_dirty(struct inode *inode, int flags)
 			bool wakeup_bdi = false;
 			bdi = inode_to_bdi(inode);
 
-            spin_unlock(&inode->i_lock);
-			spin_lock(&bdi->wb.list_lock);
-           
 			if (bdi_cap_writeback_dirty(bdi)) {
 				WARN(!test_bit(BDI_registered, &bdi->state),
 				     "bdi-%s not registered\n", bdi->name);
@@ -1133,6 +1132,8 @@ void __mark_inode_dirty(struct inode *inode, int flags)
 					wakeup_bdi = true;
 			}
 
+			spin_unlock(&inode->i_lock);
+			spin_lock(&bdi->wb.list_lock);
 			inode->dirtied_when = jiffies;
 			list_move(&inode->i_wb_list, &bdi->wb.b_dirty);
 			spin_unlock(&bdi->wb.list_lock);

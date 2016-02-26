@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -604,7 +604,7 @@ DEFINE_SIMPLE_ATTRIBUTE(reg_fops, get_reg, set_reg, "0x%02llx\n");
 
 static int get_calc(void *data, u64 * val)
 {
-	int ibat = 0, rc;
+	int ibat, rc;
 
 	rc = pm8xxx_ccadc_get_battery_current(&ibat);
 	*val = ibat;

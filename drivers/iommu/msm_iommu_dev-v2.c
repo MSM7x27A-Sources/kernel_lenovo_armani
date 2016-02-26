@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012 Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -55,7 +55,7 @@ static int __devinit msm_iommu_probe(struct platform_device *pdev)
 {
 	struct msm_iommu_drvdata *drvdata;
 	struct resource *r;
-	int ret, needs_alt_core_clk;
+	int ret;
 
 	if (msm_iommu_root_dev == pdev)
 		return 0;
@@ -79,42 +79,55 @@ static int __devinit msm_iommu_probe(struct platform_device *pdev)
 	if (IS_ERR(drvdata->gdsc))
 		return -EINVAL;
 
-	drvdata->pclk = devm_clk_get(&pdev->dev, "iface_clk");
+	drvdata->pclk = clk_get(&pdev->dev, "iface_clk");
 	if (IS_ERR(drvdata->pclk))
 		return PTR_ERR(drvdata->pclk);
 
-	drvdata->clk = devm_clk_get(&pdev->dev, "core_clk");
-	if (IS_ERR(drvdata->clk))
-		return PTR_ERR(drvdata->clk);
+	ret = clk_prepare_enable(drvdata->pclk);
+	if (ret)
+		goto fail_enable;
 
-	needs_alt_core_clk = of_property_read_bool(pdev->dev.of_node,
-						   "qcom,needs-alt-core-clk");
-	if (needs_alt_core_clk) {
-		drvdata->aclk = devm_clk_get(&pdev->dev, "alt_core_clk");
-		if (IS_ERR(drvdata->aclk))
-			return PTR_ERR(drvdata->aclk);
-	}
+	drvdata->clk = clk_get(&pdev->dev, "core_clk");
+	if (!IS_ERR(drvdata->clk)) {
+		if (clk_get_rate(drvdata->clk) == 0) {
+			ret = clk_round_rate(drvdata->clk, 1);
+			clk_set_rate(drvdata->clk, ret);
+		}
 
-	if (clk_get_rate(drvdata->clk) == 0) {
-		ret = clk_round_rate(drvdata->clk, 1);
-		clk_set_rate(drvdata->clk, ret);
-	}
-
-	if (drvdata->aclk && clk_get_rate(drvdata->aclk) == 0) {
-		ret = clk_round_rate(drvdata->aclk, 1);
-		clk_set_rate(drvdata->aclk, ret);
-	}
+		ret = clk_prepare_enable(drvdata->clk);
+		if (ret) {
+			clk_put(drvdata->clk);
+			goto fail_pclk;
+		}
+	} else
+		drvdata->clk = NULL;
 
 	ret = msm_iommu_parse_dt(pdev, drvdata);
 	if (ret)
-		return ret;
+		goto fail_clk;
 
 	pr_info("device %s mapped at %p, with %d ctx banks\n",
 		drvdata->name, drvdata->base, drvdata->ncb);
 
 	platform_set_drvdata(pdev, drvdata);
 
+	if (drvdata->clk)
+		clk_disable_unprepare(drvdata->clk);
+
+	clk_disable_unprepare(drvdata->pclk);
+
 	return 0;
+
+fail_clk:
+	if (drvdata->clk) {
+		clk_disable_unprepare(drvdata->clk);
+		clk_put(drvdata->clk);
+	}
+fail_pclk:
+	clk_disable_unprepare(drvdata->pclk);
+fail_enable:
+	clk_put(drvdata->pclk);
+	return ret;
 }
 
 static int __devexit msm_iommu_remove(struct platform_device *pdev)

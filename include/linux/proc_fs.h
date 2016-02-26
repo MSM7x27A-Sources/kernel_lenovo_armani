@@ -105,7 +105,7 @@ struct vmcore {
 extern void proc_root_init(void);
 
 void proc_flush_task(struct task_struct *task);
-
+//extern void proc_app_info_init(void);
 extern struct proc_dir_entry *create_proc_entry(const char *name, umode_t mode,
 						struct proc_dir_entry *parent);
 struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,

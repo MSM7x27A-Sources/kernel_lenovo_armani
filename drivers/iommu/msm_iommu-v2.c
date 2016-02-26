@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012 Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -51,16 +51,10 @@ static int __enable_clocks(struct msm_iommu_drvdata *drvdata)
 	if (ret)
 		goto fail;
 
-	ret = clk_prepare_enable(drvdata->clk);
-	if (ret)
-		clk_disable_unprepare(drvdata->pclk);
-
-	if (drvdata->aclk) {
-		ret = clk_prepare_enable(drvdata->aclk);
-		if (ret) {
-			clk_disable_unprepare(drvdata->clk);
+	if (drvdata->clk) {
+		ret = clk_prepare_enable(drvdata->clk);
+		if (ret)
 			clk_disable_unprepare(drvdata->pclk);
-		}
 	}
 fail:
 	return ret;
@@ -68,9 +62,8 @@ fail:
 
 static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
 {
-	if (drvdata->aclk)
-		clk_disable_unprepare(drvdata->aclk);
-	clk_disable_unprepare(drvdata->clk);
+	if (drvdata->clk)
+		clk_disable_unprepare(drvdata->clk);
 	clk_disable_unprepare(drvdata->pclk);
 }
 
