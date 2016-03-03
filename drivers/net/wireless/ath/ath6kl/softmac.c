@@ -61,7 +61,9 @@ static void ath6kl_calculate_crc(u32 target_type, u8 *data, size_t len)
 
 	ath6kl_dbg(ATH6KL_DBG_BOOT, "New Checksum: %u\n", checksum);
 }
-#if 0
+
+#ifndef WIFI_MAC_FROM_NV
+
 #ifdef CONFIG_MACH_PX
 static int ath6kl_fetch_nvmac_info(struct ath6kl *ar)
 {
@@ -132,7 +134,7 @@ static int ath6kl_fetch_mac_file(struct ath6kl *ar)
 
 	return ret;
 }
-#endif
+#endif /* CONFIG_MACH_PX */
 
 #else
 
@@ -143,12 +145,14 @@ extern int read_nv(unsigned int nv_item, void *buf);
 void ath6kl_mangle_mac_address(struct ath6kl *ar, u8 locally_administered_bit)
 {
 	u8 *ptr_mac;
-	int i=0;
+	int i = 0;
 	int ret;
-#if defined(CONFIG_MACH_PX) || defined(CONFIG_MACH_JENA)
+#if defined(CONFIG_MACH_PX) || defined(FIX_HUAWEI_BUTCHERING)
 	unsigned int softmac[6];
 #endif
-        u8 nvdata[24];
+#ifdef WIFI_MAC_FROM_NV
+	u8 nvdata[24];
+#endif
 
 	switch (ar->target_type) {
 	case TARGET_TYPE_AR6003:
@@ -169,8 +173,9 @@ void ath6kl_mangle_mac_address(struct ath6kl *ar, u8 locally_administered_bit)
 	printk("MAC from EEPROM %02X:%02X:%02X:%02X:%02X:%02X\n",
 		   ptr_mac[0], ptr_mac[1], ptr_mac[2],
 		   ptr_mac[3], ptr_mac[4], ptr_mac[5]);
-#if 1
-        nvdata[0] = (u8)i;
+
+#ifdef WIFI_MAC_FROM_NV
+	nvdata[0] = (u8)i;
 	ret = read_nv(4678, nvdata);
 	if (ret == 0) {
 		memcpy(ptr_mac, nvdata, ETH_ALEN);

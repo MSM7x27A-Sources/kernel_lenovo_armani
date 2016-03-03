@@ -483,7 +483,7 @@ void ath6kl_uevent_new_sta(struct ath6kl *ar, const u8 *mac_addr)
         char *envp[] = { event, NULL };
 
         memset(event, 0, sizeof(event));
-        sprintf(event, "SOFTAP=STA_JOIN " "wlan" "0 wl0.1 %02x:%02x:%02x:%02x:%02x:%02x", 
+        sprintf(event, "SOFTAP=STA_JOIN " "eth0" "0 wl0.1 %02x:%02x:%02x:%02x:%02x:%02x", 
         mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
         ath6kl_err("%s(): send uevent=%s\n",__FUNCTION__, event);
         kobject_uevent_env(&(ar->dev->kobj), KOBJ_CHANGE, envp);
@@ -496,7 +496,7 @@ void ath6kl_uevent_del_sta(struct ath6kl *ar, const u8 *mac_addr)
         char *envp[] = { event, NULL };
 
         memset(event, 0, sizeof(event));
-        sprintf(event, "SOFTAP=STA_LEAVE " "wlan" "0 wl0.1 %02x:%02x:%02x:%02x:%02x:%02x",
+        sprintf(event, "SOFTAP=STA_LEAVE " "eth0" "0 wl0.1 %02x:%02x:%02x:%02x:%02x:%02x",
         mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
         ath6kl_err("%s(): send uevent=%s\n",__FUNCTION__, event);
         kobject_uevent_env(&(ar->dev->kobj), KOBJ_CHANGE, envp);

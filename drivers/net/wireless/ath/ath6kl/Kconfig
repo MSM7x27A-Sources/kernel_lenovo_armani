@@ -13,6 +13,12 @@ config ATH6KL_SDIO
 	  Please note that AR6002 and AR6001 are not supported by this
 	  driver.
 
+config WIFI_MAC_FROM_NV
+	tristate "Atheros ath6kl softmac"
+	depends on ATH6KL
+	---help---
+         Softmac.
+
 config ATH6KL_USB
 	tristate "Atheros ath6kl USB support"
 	depends on ATH6KL

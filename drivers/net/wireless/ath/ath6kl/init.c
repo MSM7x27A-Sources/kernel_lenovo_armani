@@ -1865,7 +1865,7 @@ int ath6kl_core_init(struct ath6kl *ar)
 	rtnl_lock();
 
 	/* Add an initial station interface */
-	ndev = ath6kl_interface_add(ar, "wlan%d", NL80211_IFTYPE_STATION, 0,
+	ndev = ath6kl_interface_add(ar, "eth%d", NL80211_IFTYPE_STATION, 0,
 				    INFRA_NETWORK);
 
 	rtnl_unlock();
