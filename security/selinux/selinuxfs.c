@@ -31,6 +31,7 @@
 #include <linux/kobject.h>
 #include <linux/ctype.h>
 
+
 /* selinuxfs pseudo filesystem for exporting the security policy API.
    Based on the proc code and the fs/nfsd/nfsctl.c code. */
 
@@ -199,7 +200,6 @@ static const struct file_operations sel_enforce_ops = {
 	.write		= NULL,
 #else
 	.write		= sel_write_enforce,
-
 #endif
 	.llseek		= generic_file_llseek,
 };
