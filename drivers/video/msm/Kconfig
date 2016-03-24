@@ -17,6 +17,14 @@ config FB_MSM
 
 if FB_MSM
 
+config MACH_LGE_2ND_GEN_KK_WORKAROUD
+	bool "LCD errors Workaround"
+	default y
+	help
+	 Disable support for "Copy splash image to kernel memory" and KeyLED.
+	 The 2nd gen devices not have this support in bootloader.
+	 And KeyLED make screen On forever.
+
 config FB_MSM_BACKLIGHT
 	bool "Support for backlight control"
 	default y
