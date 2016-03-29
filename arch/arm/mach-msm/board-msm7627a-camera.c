@@ -571,13 +571,15 @@ static struct msm_actuator_info msm_act_main_cam_7_info = {
 	.vcm_enable     = 0,
 };
 #endif
-static struct msm_actuator_info msm_act_main_cam_6_info = {
+
+static struct msm_actuator_info msm_act_main_cam_5_info = {
 	.board_info     = &msm_act_main_cam_i2c_info,
-	.cam_name   = MSM_ACTUATOR_MAIN_CAM_6,
+	.cam_name   = MSM_ACTUATOR_MAIN_CAM_5,
 	.bus_id         = MSM_GSBI0_QUP_I2C_BUS_ID,
 	.vcm_pwd        = GPIO_NOT_CONFIGURED,
 	.vcm_enable     = 0,
 };
+
 static struct msm_camera_sensor_platform_info sensor_board_info_ov5647 = {
 	.mount_angle = 90,
 	.cam_vreg = msm_cam_vreg,
@@ -611,7 +613,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_ov5647_data = {
 	.csi_if                 = 1,
 	.camera_type	= BACK_CAMERA_2D,
 	.sensor_type = BAYER_SENSOR,
-	.actuator_info = &msm_act_main_cam_6_info,
+	.actuator_info = &msm_act_main_cam_5_info,
 };
 #endif
 #ifdef CONFIG_OV5648_TRULY_CM8352
