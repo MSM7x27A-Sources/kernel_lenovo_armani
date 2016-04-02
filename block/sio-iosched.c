@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
- 
->>>>>>> bddd271bb970444f5c84bd416b5d41e7ab79ec91
 /*
  * Simple IO scheduler
  * Based on Noop, Deadline and V(R) IO schedulers.
