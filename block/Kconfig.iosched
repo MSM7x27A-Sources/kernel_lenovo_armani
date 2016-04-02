@@ -200,15 +200,11 @@ config DEFAULT_IOSCHED
 	string
 	default "bfq" if DEFAULT_BFQ
 	default "cfq" if DEFAULT_CFQ
-<<<<<<< HEAD
 	default "deadline" if DEFAULT_DEADLINE
 	default "fiops" if DEFAULT_FIOPS
-=======
 	default "sio" if DEFAULT_SIO
->>>>>>> bddd271bb970444f5c84bd416b5d41e7ab79ec91
 	default "noop" if DEFAULT_NOOP
 	default "row" if DEFAULT_ROW
-	default "sio" if DEFAULT_SIO
 	default "sioplus" if DEFAULT_SIOPLUS
 	default "vr" if DEFAULT_VR
 	default "zen" if DEFAULT_ZEN
