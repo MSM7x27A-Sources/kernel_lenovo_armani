@@ -183,7 +183,7 @@ int vfs_fsync(struct file *file, int datasync)
 	return vfs_fsync_range(file, 0, LLONG_MAX, datasync);
 }
 EXPORT_SYMBOL(vfs_fsync);
-
+#if 0
 static int do_fsync(unsigned int fd, int datasync)
 {
 	struct file *file;
@@ -196,15 +196,17 @@ static int do_fsync(unsigned int fd, int datasync)
 	}
 	return ret;
 }
-
+#endif
 SYSCALL_DEFINE1(fsync, unsigned int, fd)
 {
-	return do_fsync(fd, 0);
+	//return do_fsync(fd, 0);
+        return 0;
 }
 
 SYSCALL_DEFINE1(fdatasync, unsigned int, fd)
 {
-	return do_fsync(fd, 1);
+	//return do_fsync(fd, 1);
+	return 0;
 }
 
 /**
@@ -274,6 +276,7 @@ EXPORT_SYMBOL(generic_write_sync);
 SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 				unsigned int flags)
 {
+#ifdef ALLOWFSYNC
 	int ret;
 	struct file *file;
 	struct address_space *mapping;
@@ -353,6 +356,8 @@ out_put:
 	fput_light(file, fput_needed);
 out:
 	return ret;
+#endif
+return 0;	
 }
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS
 asmlinkage long SyS_sync_file_range(long fd, loff_t offset, loff_t nbytes,
@@ -369,7 +374,8 @@ SYSCALL_ALIAS(sys_sync_file_range, SyS_sync_file_range);
 SYSCALL_DEFINE(sync_file_range2)(int fd, unsigned int flags,
 				 loff_t offset, loff_t nbytes)
 {
-	return sys_sync_file_range(fd, offset, nbytes, flags);
+	//return sys_sync_file_range(fd, offset, nbytes, flags);
+  return 0;
 }
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS
 asmlinkage long SyS_sync_file_range2(long fd, long flags,

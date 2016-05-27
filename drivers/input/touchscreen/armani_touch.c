@@ -46,8 +46,11 @@
 #include <linux/mount.h>
 #include <linux/netdevice.h>
 #include <linux/proc_fs.h>
+#include <linux/jiffies.h>
 //#include <asm/jzsoc.h>
-
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+#include <linux/input/sweep2wake.h>
+#endif
 //extern int is_usb_pluge(void);
 //static int open_emi_on = 0;
 int release_flag = 0;
@@ -59,7 +62,9 @@ unsigned char FW_Ver=-1;
 static struct i2c_client *this_client;
 //static struct ft5x0x_ts_platform_data *pdata;
 #if 1
+
 static int start = 0;	//start down fw for CTP 1:enable
+
 #endif
 #define CONFIG_FT5X0X_MULTITOUCH 1
 #define POLLING		1
@@ -1162,6 +1167,12 @@ static int ft5x0x_read_data(void)
 
 	if (event->touch_point == 0) {
 	//	printk("tcouch point =0\n");//add by liuyh
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	        exec_count = true;
+		barrier[0] = false;
+		barrier[1] = false;
+		scr_on_touch = false;
+#endif		
 		ft5x0x_ts_release();
 	}
 	else
@@ -1184,6 +1195,15 @@ static int ft5x0x_read_data(void)
 			case 1:
 				event->x1 = (s16)(buf[3] & 0x0F)<<8 | (s16)buf[4];
 				event->y1 = (s16)(buf[5] & 0x0F)<<8 | (s16)buf[6];
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+				if(sweep2wake > 0){
+			 detect_sweep2wake(event->x1, event->y1);
+			}
+			
+			if(doubletap2wake > 0){
+			doubletap2wake_func(up_x1, up_y1, jiffies);
+			}
+#endif			
 				break;
 			default:
 				return -1;
@@ -1191,6 +1211,7 @@ static int ft5x0x_read_data(void)
 #else
 		if (event->touch_point == 1) {
 			event->x1 = (s16)(buf[3] & 0x0F)<<8 | (s16)buf[4];
+			
 			event->y1 = (s16)(buf[5] & 0x0F)<<8 | (s16)buf[6];
 		}
 #endif
@@ -1328,9 +1349,9 @@ static void ft5x0x_report_value(void)
 #endif	/* CONFIG_FT5X0X_MULTITOUCH*/
 	input_sync(data->input_dev);
 		}
-
 	release_flag = 1;
 }	/*end ft5x0x_report_value*/
+
 #if 0
 void emi_on(void)
 {
@@ -1424,13 +1445,25 @@ function	:
  ***********************************************************************************************/
 static void ft5x0x_ts_suspend(struct early_suspend *handler)
 {
+
 	struct ft5x0x_ts_data *ft5x0x_ts = container_of(handler, struct ft5x0x_ts_data,
 			early_suspend);
+	
 	int ret;
-
+	
+       
+	
 	ctp_debug_info("==ft5x0x_ts_suspend=\n");
-	if(!start)
-	{
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+	 scr_suspended = true;
+        if((sweep2wake > 0) || (doubletap2wake > 0)) {
+	                enable_irq_wake(this_client->irq);
+	 printk("Sweep2Wake:Touchscren Suspended!");
+	}else{
+#endif
+	printk("Touchscreen Suspended!");
+	  if(!start)
+	{        
 		ft5x0x_write_reg(FT5X0X_REG_PMODE, PMODE_HIBERNATE);
 		msleep(10);
 		disable_irq(this_client->irq);
@@ -1442,8 +1475,14 @@ static void ft5x0x_ts_suspend(struct early_suspend *handler)
 			enable_irq(this_client->irq);
 		}
 //		flush_workqueue(ft5x0x_ts->ts_workqueue);
+	  
 	}
+	
 	suspend_flag = 1;
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE		
+	  
+	}
+#endif
 }
 /***********************************************************************************************
 Name	:	 
@@ -1480,17 +1519,30 @@ static void ft5x0x_ts_resume(struct early_suspend *handler)
 	{
 		ft5x0x_ts_release();
 	}
-*/			
-	vreg_enable(vreg_touch); 
-	gpio_set_value(26, 0);
-	msleep(1);
-	gpio_set_value(26, 1);
-	msleep(200);
-	ft5x0x_write_reg(FT5X0X_REG_PMODE, PMODE_MONITOR);
-	msleep(20);
-	enable_irq(this_client->irq);
+*/	
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+		scr_suspended = false;
+
+ if((sweep2wake > 0) || (doubletap2wake > 0)) {
+		disable_irq_wake(this_client->irq);
+                printk("Sweep2Wake:Touchscren Resume!");
+                }else{
+#endif		  
+		printk("TouchScreen Resume!");
+                vreg_enable(vreg_touch); 
+		gpio_set_value(26, 0);
+		msleep(1);
+		gpio_set_value(26, 1);
+		msleep(200);
+		ft5x0x_write_reg(FT5X0X_REG_PMODE, PMODE_MONITOR);
+		msleep(20);
+		enable_irq(this_client->irq);
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE		
+  }
+#endif
+  
 }
-#endif  //CONFIG_HAS_EARLYSUSPEND
+#endif//CONFIG_HAS_EARLYSUSPEND
 #if 0
 /***********************************************************************************************
 Name	:	 
@@ -1906,7 +1958,7 @@ static int ft5x0x_ts_probe(struct i2c_client *client, const struct i2c_device_id
 	//set possible event type
 	set_bit(EV_KEY, gesture_input_dev->evbit);
 
-	gesture_input_dev->name		= FT5X0X_GESTURE_NAME;		//dev_name(&client->dev)
+       	gesture_input_dev->name		= FT5X0X_GESTURE_NAME;		//dev_name(&client->dev)
 	// [ -- WNC-NJ:Peitao add input register function for gesture  @ 20110822
 	err = input_register_device(gesture_input_dev);
 	if (err) {
@@ -1915,7 +1967,6 @@ static int ft5x0x_ts_probe(struct i2c_client *client, const struct i2c_device_id
 	}
 	// -- WNC-NJ:Peitao add input register function for gesture  @ 20110822 ]
 	//WNC Ophas 2011-08-18, for gesture key of touch screen B area--]
-
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	ctp_debug_info("==register_early_suspend =\n");
 	ft5x0x_ts->early_suspend.level = EARLY_SUSPEND_LEVEL_STOP_DRAWING - 5;

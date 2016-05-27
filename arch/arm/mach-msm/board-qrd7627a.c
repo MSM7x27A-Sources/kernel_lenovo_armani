@@ -818,11 +818,17 @@ static void fix_sizes(void)
 {
 	if (get_ddr_size() > SZ_512M)
 		reserve_adsp_size = CAMERA_ZSL_SIZE;
+#if 0	
 	else {
 		if (machine_is_msm8625q_skue() || machine_is_msm8625q_evbd()
 					|| machine_is_msm8625q_skud())
 			reserve_mdp_size = 0;
 	}
+	
+	if (reserve_mdp_size == 0) {
+	  printk("Platform has only 512 M Ram");
+	}
+#endif	
 #ifdef CONFIG_ION_MSM
 	msm_ion_audio_size = MSM_RESERVE_AUDIO_SIZE;
 	msm_ion_sf_size = reserve_mdp_size;
@@ -1005,7 +1011,7 @@ static void __init msm7627a_reserve(void)
 			&ion_cma_device.dev,
 			msm_ion_camera_size,
 			CAMERA_HEAP_BASE,
-			0xa0000000);
+			0x26000000);
 #endif
 }
 
