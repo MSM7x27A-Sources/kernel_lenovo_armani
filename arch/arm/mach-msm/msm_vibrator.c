@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2008 HTC Corporation.
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2012 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2013, The Linux Foundation. All Rights Reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -34,7 +34,7 @@
 
 #define HTC_PROCEDURE_SET_VIB_ON_OFF	21
 #define PMIC_VIBRATOR_LEVEL	(3000)
-static struct workqueue_struct *vibrator_queue;
+
 static struct work_struct vibrator_work;
 static struct hrtimer vibrator_timer;
 static DEFINE_MUTEX(vibrator_mtx);
@@ -94,7 +94,7 @@ static void set_pmic_vibrator(int on)
 
 static void update_vibrator(struct work_struct *work)
 {
-	pr_warn("%s,%d,%s\n", __func__,current->pid,current->comm);
+	pr_debug("%s\n", __func__);
 	set_pmic_vibrator(0);
 }
 
@@ -102,7 +102,6 @@ static void vibrator_enable(struct timed_output_dev *dev, int value)
 {
 	mutex_lock(&vibrator_mtx);
 	hrtimer_cancel(&vibrator_timer);
-//	printk("%s,value is %d\n",__func__,value);
 	cancel_work_sync(&vibrator_work);
 
 	if (value == 0) {
@@ -129,10 +128,8 @@ static int vibrator_get_time(struct timed_output_dev *dev)
 
 static enum hrtimer_restart vibrator_timer_func(struct hrtimer *timer)
 {
-	pr_warn("%s,%d,%s\n", __func__,current->pid,current->comm);
-	//schedule_work(&vibrator_work);
-	queue_work(vibrator_queue,&vibrator_work);
-	printk("schedule work finished\n");
+	pr_debug("%s\n", __func__);
+	schedule_work(&vibrator_work);
 	return HRTIMER_NORESTART;
 }
 
@@ -144,9 +141,7 @@ static struct timed_output_dev pmic_vibrator = {
 
 void __init msm_init_pmic_vibrator(void)
 {
-
 	INIT_WORK(&vibrator_work, update_vibrator);
-	vibrator_queue = create_singlethread_workqueue("vibraotr_queue");
 	hrtimer_init(&vibrator_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	vibrator_timer.function = vibrator_timer_func;
 
@@ -155,4 +150,3 @@ void __init msm_init_pmic_vibrator(void)
 
 MODULE_DESCRIPTION("timed output pmic vibrator device");
 MODULE_LICENSE("GPL");
-
