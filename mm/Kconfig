@@ -8,16 +8,16 @@ choice
 	default DISCONTIGMEM_MANUAL if ARCH_DISCONTIGMEM_DEFAULT
 	default SPARSEMEM_MANUAL if ARCH_SPARSEMEM_DEFAULT
 	default FLATMEM_MANUAL
-
+	
 config FLATMEM_MANUAL
-	bool "Flat Memory"
-	depends on !(ARCH_DISCONTIGMEM_ENABLE || ARCH_SPARSEMEM_ENABLE) || ARCH_FLATMEM_ENABLE
+	  bool "Flat Memory"
+	    depends on !(ARCH_DISCONTIGMEM_ENABLE || ARCH_SPARSEMEM_ENABLE) || ARCH_FLATMEM_ENABLE
 	help
 	  This option allows you to change some of the ways that
 	  Linux manages its memory internally.  Most users will
 	  only have one option here: FLATMEM.  This is normal
 	  and a correct option.
-
+	  
 	  Some users of more advanced features like NUMA and
 	  memory hotplug may have different options here.
 	  DISCONTIGMEM is an more mature, better tested system,
@@ -25,7 +25,7 @@ config FLATMEM_MANUAL
 	  decreased performance over SPARSEMEM.  If unsure between
 	  "Sparse Memory" and "Discontiguous Memory", choose
 	  "Discontiguous Memory".
-
+	  
 	  If unsure, choose this option (Flat Memory) over any other.
 
 config DISCONTIGMEM_MANUAL
@@ -386,17 +386,17 @@ config FRONTSWAP
 	default n
 	help
 	  Frontswap is so named because it can be thought of as the opposite
-	  of a "backing" store for a swap device.  The data is stored into
+	  of a "backing" store for a swap device. The data is stored into
 	  "transcendent memory", memory that is not directly accessible or
 	  addressable by the kernel and is of unknown and possibly
-	  time-varying size.  When space in transcendent memory is available,
-	  a significant swap I/O reduction may be achieved.  When none is
+	  time-varying size. When space in transcendent memory is available,
+	  a significant swap I/O reduction may be achieved. When none is
 	  available, all frontswap calls are reduced to a single pointer-
 	  compare-against-NULL resulting in a negligible performance hit
 	  and swap data is stored as normal on the matching swap device.
 
-	  If unsure, say Y to enable frontswap.
-
+	  If unsure, say Y to enable frontswap.	  
+	  
 config MEMORY_HOLE_CARVEOUT
         bool
         help
@@ -419,26 +419,27 @@ config USE_USER_ACCESSIBLE_TIMERS
 	  separately.
 
 config ZSMALLOC
-	bool "Memory allocator for compressed pages"
-	depends on MMU
-	default n
-	help
-	  zsmalloc is a slab-based memory allocator designed to store
-	  compressed RAM pages.  zsmalloc uses virtual memory mapping
-	  in order to reduce fragmentation.  However, this results in a
-	  non-standard allocator interface where a handle, not a pointer, is
-	  returned by an alloc().  This handle must be mapped in order to
-	  access the allocated space.
+      bool "Memory allocator for compressed pages"
+      depends on MMU
+      default n
+      help
+	    zsmalloc is a slab-based memory allocator designed to store
+	    compressed RAM pages. zsmalloc uses virtual memory mapping
+	    in order to reduce fragmentation. However, this results in a
+	    non-standard allocator interface where a handle, not a pointer, is
+	    returned by an alloc(). This handle must be mapped in order to
+	    access the allocated space.
 
 config PGTABLE_MAPPING
-	bool "Use page table mapping to access object in zsmalloc"
-	depends on ZSMALLOC
-	help
-	  By default, zsmalloc uses a copy-based object mapping method to
-	  access allocations that span two pages. However, if a particular
-	  architecture (ex, ARM) performs VM mapping faster than copying,
-	  then you should select this. This causes zsmalloc to use page table
-	  mapping rather than copying for object mapping.
+      bool "Use page table mapping to access object in zsmalloc"
+      depends on ZSMALLOC
+      help
+	      By default, zsmalloc uses a copy-based object mapping method to
+	      access allocations that span two pages. However, if a particular
+	      architecture (ex, ARM) performs VM mapping faster than copying,
+	      then you should select this. This causes zsmalloc to use page table
+	      mapping rather than copying for object mapping.
 
-	  You can check speed with zsmalloc benchmark[1].
-	  [1] https://github.com/spartacus06/zsmalloc
+	      You can check speed with zsmalloc benchmark[1].
+	      [1] https://github.com/spartacus06/zsmalloc
+	  

@@ -161,8 +161,8 @@ static inline int allocflags_to_migratetype(gfp_t gfp_flags)
 
 	/* Group based on mobility */
 #ifndef CONFIG_CMA
- 	return (((gfp_flags & __GFP_MOVABLE) != 0) << 1) |
- 		((gfp_flags & __GFP_RECLAIMABLE) != 0);
+	return (((gfp_flags & __GFP_MOVABLE) != 0) << 1) |
+		((gfp_flags & __GFP_RECLAIMABLE) != 0);
 #else
 	return (((gfp_flags & __GFP_MOVABLE) != 0) << 1) |
 		(((gfp_flags & __GFP_CMA) != 0) << 1) |
