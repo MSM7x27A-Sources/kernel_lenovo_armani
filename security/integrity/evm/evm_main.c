@@ -283,17 +283,23 @@ int evm_inode_setxattr(struct dentry *dentry, const char *xattr_name,
 	const struct evm_ima_xattr_data *xattr_data = xattr_value;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e413583... Squashed update of kernel from 3.4.105 to 3.4.106
 	if (strcmp(xattr_name, XATTR_NAME_EVM) == 0) {
 		if (!xattr_value_len)
 			return -EINVAL;
 		if (xattr_data->type != EVM_IMA_XATTR_DIGSIG)
 			return -EPERM;
 	}
+<<<<<<< HEAD
 =======
 	if ((strcmp(xattr_name, XATTR_NAME_EVM) == 0)
 	    && (xattr_data->type == EVM_XATTR_HMAC))
 		return -EPERM;
 >>>>>>> 992fa51... Squashed update of kernel from 3.4.94 to 3.4.95
+=======
+>>>>>>> e413583... Squashed update of kernel from 3.4.105 to 3.4.106
 	return evm_protect_xattr(dentry, xattr_name, xattr_value,
 				 xattr_value_len);
 }
