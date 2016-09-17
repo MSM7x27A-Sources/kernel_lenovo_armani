@@ -179,6 +179,7 @@ do_gc:
  */
 static noinline void key_gc_unused_keys(struct list_head *keys)
 {
+<<<<<<< HEAD
 	while (!list_empty(keys)) {
 		struct key *key =
 			list_entry(keys->next, struct key, graveyard_link);
@@ -202,6 +203,29 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 			key->user->qnbytes -= key->quotalen;
 			spin_unlock(&key->user->lock);
 		}
+=======
+	key_check(key);
+
+	/* Throw away the key data if the key is instantiated */
+	if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags) &&
+	    !test_bit(KEY_FLAG_NEGATIVE, &key->flags) &&
+	    key->type->destroy)
+		key->type->destroy(key);
+
+	security_key_free(key);
+
+	/* deal with the user's key tracking and quota */
+	if (test_bit(KEY_FLAG_IN_QUOTA, &key->flags)) {
+		spin_lock(&key->user->lock);
+		key->user->qnkeys--;
+		key->user->qnbytes -= key->quotalen;
+		spin_unlock(&key->user->lock);
+	}
+
+	atomic_dec(&key->user->nkeys);
+	if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
+		atomic_dec(&key->user->nikeys);
+>>>>>>> 2498150... Squashed update of kernel from 3.4.110 to 3.4.111
 
 		atomic_dec(&key->user->nkeys);
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
