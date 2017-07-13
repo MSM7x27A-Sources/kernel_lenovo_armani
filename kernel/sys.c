@@ -365,10 +365,6 @@ void kernel_restart(char *cmd)
 {
 	kernel_restart_prepare(cmd);
 	disable_nonboot_cpus();
-<<<<<<< HEAD
-=======
-	syscore_shutdown();
->>>>>>> cdb568f... Squashed update of kernel from 3.4.0 to 3.4.42
 	if (!cmd)
 		printk(KERN_EMERG "Restarting system.\n");
 	else

@@ -1318,14 +1318,9 @@ static void jbd2_mark_journal_empty(journal_t *journal)
 
 	BUG_ON(!mutex_is_locked(&journal->j_checkpoint_mutex));
 	read_lock(&journal->j_state_lock);
-<<<<<<< HEAD
 	new_tail_sequence = cpu_to_be32(journal->j_tail_sequence); 
 	/* Nothing to do? */ 
 	if (sb->s_start == 0 && sb->s_sequence == new_tail_sequence) { 
-=======
-	/* Is it already empty? */
-	if (sb->s_start == 0) {
->>>>>>> cdb568f... Squashed update of kernel from 3.4.0 to 3.4.42
 		read_unlock(&journal->j_state_lock);
 		return;
 	}
