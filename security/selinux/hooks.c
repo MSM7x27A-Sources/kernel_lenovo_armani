@@ -4904,13 +4904,6 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb, int ifindex,
 		return NF_ACCEPT;
 #endif
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	sk = skb->sk;
->>>>>>> 8be84a2... Squashed update of kernel from 3.4.74 to 3.4.75
-=======
->>>>>>> 1b3f00d... Squashed update of kernel from 3.4.75 to 3.4.76
 	if (sk == NULL) {
 		/* Without an associated socket the packet is either coming
 		 * from the kernel or it is being forwarded; check the packet
@@ -4938,10 +4931,6 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb, int ifindex,
 		struct sk_security_struct *sksec = sk->sk_security;
 		if (selinux_skb_peerlbl_sid(skb, family, &skb_sid))
 			return NF_DROP;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1b3f00d... Squashed update of kernel from 3.4.75 to 3.4.76
 		/* At this point, if the returned skb peerlbl is SECSID_NULL
 		 * and the packet has been through at least one XFRM
 		 * transformation then we must be dealing with the "final"
@@ -4961,11 +4950,6 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb, int ifindex,
 				return NF_DROP_ERR(-ECONNREFUSED);
 			}
 		}
-<<<<<<< HEAD
-=======
->>>>>>> 8be84a2... Squashed update of kernel from 3.4.74 to 3.4.75
-=======
->>>>>>> 1b3f00d... Squashed update of kernel from 3.4.75 to 3.4.76
 		if (selinux_conn_sid(sksec->sid, skb_sid, &peer_sid))
 			return NF_DROP;
 		secmark_perm = PACKET__SEND;
