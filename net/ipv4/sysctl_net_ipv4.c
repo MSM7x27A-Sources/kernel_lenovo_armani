@@ -26,7 +26,7 @@
 #include <net/ping.h>
 #include <net/tcp_memcontrol.h>
 
-static int zero;
+int zero = 0;
 static int one = 1;
 static int tcp_retr1_max = 255;
 static int ip_local_port_range_min[] = { 1, 1 };
