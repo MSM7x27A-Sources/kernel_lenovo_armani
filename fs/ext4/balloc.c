@@ -280,7 +280,6 @@ static int ext4_valid_block_bitmap(struct super_block *sb,
 					unsigned int block_group,
 					struct buffer_head *bh)
 {
-	int blk;
 	ext4_grpblk_t offset;
 	ext4_grpblk_t next_zero_bit;
 	ext4_fsblk_t bitmap_blk;
@@ -293,33 +292,37 @@ static int ext4_valid_block_bitmap(struct super_block *sb,
 		 * or it has to also read the block group where the bitmaps
 		 * are located to verify they are set.
 		 */
-		return 0;
+		return 1;
 	}
 	group_first_block = ext4_group_first_block_no(sb, block_group);
 
 	/* check whether block bitmap block number is set */
-	blk = ext4_block_bitmap(sb, desc);
-	offset = blk - group_first_block;
+	bitmap_blk = ext4_block_bitmap(sb, desc);
+	offset = bitmap_blk - group_first_block;
 	if (!ext4_test_bit(offset, bh->b_data))
 		/* bad block bitmap */
-		return blk;
+		goto err_out;
 
 	/* check whether the inode bitmap block number is set */
-	blk = ext4_inode_bitmap(sb, desc);
-	offset = blk - group_first_block;
+	bitmap_blk = ext4_inode_bitmap(sb, desc);
+	offset = bitmap_blk - group_first_block;
 	if (!ext4_test_bit(offset, bh->b_data))
 		/* bad block bitmap */
-		return blk;
+		goto err_out;
 
 	/* check whether the inode table block number is set */
-	blk = ext4_inode_table(sb, desc);
-	offset = blk - group_first_block;
+	bitmap_blk = ext4_inode_table(sb, desc);
+	offset = bitmap_blk - group_first_block;
 	next_zero_bit = ext4_find_next_zero_bit(bh->b_data,
 				offset + EXT4_SB(sb)->s_itb_per_group,
 				offset);
-	if (next_zero_bit < offset + EXT4_SB(sb)->s_itb_per_group)
-		/* bad bitmap for inode tables */
-		return blk;
+	if (next_zero_bit >= offset + EXT4_SB(sb)->s_itb_per_group)
+		/* good bitmap for inode tables */
+		return 1;
+
+err_out:
+	ext4_error(sb, "Invalid block bitmap - block_group = %d, block = %llu",
+			block_group, bitmap_blk);
 	return 0;
 }
 /**
@@ -615,11 +618,15 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 
 static inline int test_root(ext4_group_t a, int b)
 {
-	int num = b;
-
-	while (a > num)
-		num *= b;
-	return num == a;
+	while (1) {
+		if (a < b)
+			return 0;
+		if (a == b)
+			return 1;
+		if ((a % b) != 0)
+			return 0;
+		a = a / b;
+	}
 }
 
 static int ext4_group_sparse(ext4_group_t group)
