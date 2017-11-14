@@ -5035,11 +5035,6 @@ static int nl80211_connect(struct sk_buff *skb, struct genl_info *info)
 	connect.ssid = nla_data(info->attrs[NL80211_ATTR_SSID]);
 	connect.ssid_len = nla_len(info->attrs[NL80211_ATTR_SSID]);
 
-	if (info->attrs[NL80211_ATTR_IE]) {
-		connect.ie = nla_data(info->attrs[NL80211_ATTR_IE]);
-		connect.ie_len = nla_len(info->attrs[NL80211_ATTR_IE]);
-	}
-
 	if (info->attrs[NL80211_ATTR_WIPHY_FREQ]) {
 		connect.channel =
 			ieee80211_get_channel(wiphy,

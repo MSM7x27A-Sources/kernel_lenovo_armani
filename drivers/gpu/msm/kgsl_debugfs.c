@@ -1,4 +1,4 @@
-/* Copyright (c) 2002,2008-2012,2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2002,2008-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,6 +18,7 @@
 #include "kgsl_device.h"
 #include "kgsl_sharedmem.h"
 
+/*default log levels is error for everything*/
 #define KGSL_LOG_LEVEL_MAX     7
 
 struct dentry *kgsl_debugfs_dir;
@@ -29,9 +30,9 @@ static int pm_dump_set(void *data, u64 val)
 	struct kgsl_device *device = data;
 
 	if (val) {
-		mutex_lock(&device->mutex);
+		kgsl_mutex_lock(&device->mutex, &device->mutex_owner);
 		kgsl_postmortem_dump(device, 1);
-		mutex_unlock(&device->mutex);
+		kgsl_mutex_unlock(&device->mutex, &device->mutex_owner);
 	}
 
 	return 0;
@@ -121,7 +122,6 @@ KGSL_DEBUGFS_LOG(cmd_log);
 KGSL_DEBUGFS_LOG(ctxt_log);
 KGSL_DEBUGFS_LOG(mem_log);
 KGSL_DEBUGFS_LOG(pwr_log);
-KGSL_DEBUGFS_LOG(ft_log);
 
 void kgsl_device_debugfs_init(struct kgsl_device *device)
 {
@@ -199,7 +199,7 @@ static char get_cacheflag(const struct kgsl_memdesc *m)
 
 static void print_mem_entry(struct seq_file *s, struct kgsl_mem_entry *entry)
 {
-	char flags[6];
+	char flags[7];
 	char usage[16];
 	struct kgsl_memdesc *m = &entry->memdesc;
 
@@ -208,11 +208,12 @@ static void print_mem_entry(struct seq_file *s, struct kgsl_mem_entry *entry)
 	flags[2] = get_alignflag(m);
 	flags[3] = get_cacheflag(m);
 	flags[4] = kgsl_memdesc_use_cpu_map(m) ? 'p' : '-';
-	flags[5] = '\0';
+	flags[5] = (m->useraddr) ? 'Y' : 'N';
+	flags[6] = '\0';
 
 	kgsl_get_memory_usage(usage, sizeof(usage), m->flags);
 
-	seq_printf(s, "%pK %pK %8zd %5d %5s %10s %16s %5d\n",
+	seq_printf(s, "%pK %pK %8zd %5d %6s %10s %16s %5d\n",
 			(unsigned long *) m->gpuaddr,
 			(unsigned long *) m->useraddr,
 			m->size, entry->id, flags,
@@ -226,7 +227,7 @@ static int process_mem_print(struct seq_file *s, void *unused)
 	struct kgsl_process_private *private = s->private;
 	int next = 0;
 
-	seq_printf(s, "%8s %8s %8s %5s %5s %10s %16s %5s\n",
+	seq_printf(s, "%8s %8s %8s %5s %6s %10s %16s %5s\n",
 		   "gpuaddr", "useraddr", "size", "id", "flags", "type",
 		   "usage", "sglen");
 
@@ -238,20 +239,17 @@ static int process_mem_print(struct seq_file *s, void *unused)
 		print_mem_entry(s, entry);
 	}
 
-	spin_unlock(&private->mem_lock);
 
 	/* now print all the unbound entries */
 	while (1) {
-		rcu_read_lock();
 		entry = idr_get_next(&private->mem_idr, &next);
-		rcu_read_unlock();
-
 		if (entry == NULL)
 			break;
 		if (entry->memdesc.gpuaddr == 0)
 			print_mem_entry(s, entry);
 		next++;
 	}
+	spin_unlock(&private->mem_lock);
 
 	return 0;
 }
@@ -292,12 +290,25 @@ static const struct file_operations process_mem_fops = {
 	.release = process_mem_release,
 };
 
+
+/**
+ * kgsl_process_init_debugfs() - Initialize debugfs for a process
+ * @private: Pointer to process private structure created for the process
+ *
+ * @returns: 0 on success, error code otherwise
+ *
+ * kgsl_process_init_debugfs() is called at the time of creating the
+ * process struct when a process opens kgsl device for the first time.
+ * The function creates the debugfs files for the process. If debugfs is
+ * disabled in the kernel, we ignore that error and return as successful.
+ */
 int
 kgsl_process_init_debugfs(struct kgsl_process_private *private)
 {
 	unsigned char name[16];
 	int ret = 0;
 	struct dentry *dentry;
+
 	snprintf(name, sizeof(name), "%d", private->pid);
 
 	private->debug_root = debugfs_create_dir(name, proc_d_debugfs);
